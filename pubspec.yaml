@@ -1,16 +1,14 @@
 name: dart_pdf_reader
 description: Small pure-dart library for parsing PDF files. Supports reading all pdf structures
-version: 0.0.2
+version: 0.0.3
 repository: https://github.com/NicolaVerbeeck/dart_pdf_reader
 
 environment:
-  sdk: '>=2.19.1 <=4.0.0'
+  sdk: '>=2.19.1 <4.0.0'
 
 dependencies:
   charset: ^2.0.0
-  image: ^4.0.17
   meta: ^1.9.1
-  vector_math: ^2.1.4
 
 dev_dependencies:
   lints: ^2.0.0

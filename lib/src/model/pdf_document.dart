@@ -20,6 +20,12 @@ class PDFDocument {
     required this.mainTrailer,
     required ObjectResolver objectResolver,
   }) : _objectResolver = objectResolver;
+
+  /// Resolves the [PDFObject] to its actual value, reading it from the document
+  /// as needed
+  Future<T?> resolve<T extends PDFObject>(PDFObject? toResolve) {
+    return _objectResolver.resolve(toResolve);
+  }
 }
 
 extension DocExt on PDFDocument {

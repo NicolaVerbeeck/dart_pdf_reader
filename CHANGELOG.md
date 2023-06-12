@@ -1,3 +1,9 @@
+## 0.0.3
+
+- Remove unused dependencies
+- Add some clone methods
+- Change visibility of some dictionary map
+
 ## 0.0.2
 
 - Update dependencies

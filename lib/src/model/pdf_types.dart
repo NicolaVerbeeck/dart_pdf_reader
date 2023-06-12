@@ -27,6 +27,9 @@ class PDFNumber extends PDFObject {
   /// Creates a new [PDFNumber] object.
   const PDFNumber(this._value) : assert(_value is int || _value is double);
 
+  /// Creates a new [PDFNumber] object as copy from this one
+  PDFNumber clone() => PDFNumber(_value);
+
   @override
   String toString() {
     final truncated = _truncate();
@@ -93,6 +96,9 @@ class PDFLiteralString extends PDFStringLike {
     return utf8.decode(_value);
   }
 
+  @override
+  PDFLiteralString clone() => PDFLiteralString(_value);
+
   bool _isUnicode() {
     if (_value.length < 2) return false;
     return _value[0] == 0xfe && _value[1] == 0xff;
@@ -105,6 +111,9 @@ abstract class PDFStringLike extends PDFObject {
 
   /// The dart string representation of this object.
   String asString();
+
+  /// Creates a copy of this [PDFStringLike] object
+  PDFStringLike clone();
 }
 
 /// Hex string defined in PDF
@@ -115,6 +124,9 @@ class PDFHexString extends PDFLiteralString {
 
   @override
   String toString() => '<$_value>';
+
+  @override
+  PDFHexString clone() => PDFHexString(_value);
 }
 
 /// PDF boolean object
@@ -195,20 +207,20 @@ class PDFArray extends PDFObject
 /// PDF dictionary object
 class PDFDictionary extends PDFObject {
   /// The entries of the dictionary.
-  final Map<PDFName, PDFObject> _entries;
+  final Map<PDFName, PDFObject> entries;
 
   /// Creates a new [PDFDictionary] object.
-  PDFDictionary(this._entries);
+  PDFDictionary(this.entries);
 
   @override
   String toString() =>
-      '<<${_entries.entries.map((e) => '${e.key} ${e.value}').join(' ')}>>';
+      '<<${entries.entries.map((e) => '${e.key} ${e.value}').join(' ')}>>';
 
   /// Accessor operator that returns the object for [key] if any
-  PDFObject? operator [](PDFName key) => _entries[key];
+  PDFObject? operator [](PDFName key) => entries[key];
 
   /// Checks if the dictionary has an entry for [key]
-  bool has(PDFName key) => _entries.containsKey(key);
+  bool has(PDFName key) => entries.containsKey(key);
 }
 
 /// A reference to another PDF object
