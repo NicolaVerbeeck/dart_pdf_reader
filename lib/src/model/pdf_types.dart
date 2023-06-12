@@ -2,7 +2,7 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:charset/charset.dart';
-import 'package:dart_pdf_reader/pdf_reader.dart';
+import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for all PDF objects.

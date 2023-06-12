@@ -1,4 +1,4 @@
-import 'package:dart_pdf_reader/pdf_reader.dart';
+import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
 
 class ReaderHelper {

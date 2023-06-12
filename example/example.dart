@@ -1,6 +1,6 @@
 import 'dart:io';
 
-import 'package:dart_pdf_reader/pdf_reader.dart';
+import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/model/pdf_page.dart';
 
 Future<void> main(List<String> args) async {
