@@ -4,11 +4,15 @@ import 'package:dart_pdf_reader/src/model/pdf_document.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 
+/// Pages tree root of the document
 class PDFPages {
   final PDFPageTreeNode _root;
 
+  /// Create a new instance of [PDFPages]
   PDFPages(this._root);
 
+  /// Gets the page at the given index. Indexes start at 0. If the page
+  /// with the given index could not be found, an exception is thrown.
   PDFPageObjectNode getPageAtIndex(int index) => _get(index + 1, _root, 0);
 
   PDFPageObjectNode _get(int pageNum, PDFPageNode node, int encountered) {
@@ -19,11 +23,11 @@ class PDFPages {
         throw Exception('Page not found');
       }
     }
-    final count = node.length;
+    final count = node._length;
     if (pageNum <= encountered + count) {
       for (final PDFPageNode kid in node._children) {
         if (kid is PDFPageTreeNode) {
-          final kidCount = kid.length;
+          final kidCount = kid._length;
           if (pageNum <= encountered + kidCount) {
             return _get(pageNum, kid, encountered);
           } else {
@@ -49,20 +53,27 @@ class PDFPages {
   }
 }
 
-class PDFPageNode {
+abstract class PDFPageNode {
+  /// The document this page belongs to
   final PDFDocument document;
+
+  /// The parent of this page
   final PDFPageNode? parent;
   final ObjectResolver _objectResolver;
   final PDFDictionary _dictionary;
 
+  /// The dictionary of this page
   PDFDictionary get dictionary => _dictionary;
 
+  /// Reads this page's content stream if present
   Future<PDFStreamObject?> get contentStream =>
       _objectResolver.resolve(_dictionary[const PDFName('Contents')]);
 
+  /// Reads this page's resources if present
   Future<PDFDictionary?> get resources =>
       _objectResolver.resolve(_dictionary[const PDFName('Resources')]);
 
+  /// Creates a new pdf page node
   PDFPageNode(
     this.document,
     this.parent,
@@ -75,6 +86,8 @@ class PDFPageNode {
     return 'PDFPageNode{_dictionary: $_dictionary}';
   }
 
+  /// Gets the value of the given key from this page's dictionary. If the key
+  /// is not present, the parent's dictionary is searched and so on and so on
   T? getOrInherited<T extends PDFObject>(PDFName name) {
     final self = _dictionary[name];
     if (self != null) return self as T;
@@ -85,9 +98,10 @@ class PDFPageNode {
   }
 }
 
+/// An intermediate node in the pages tree
 class PDFPageTreeNode extends PDFPageNode {
   final List<PDFPageNode> _children;
-  final int length;
+  final int _length;
 
   PDFPageTreeNode(
     super.document,
@@ -95,7 +109,7 @@ class PDFPageTreeNode extends PDFPageNode {
     super.objectResolver,
     super.dictionary,
     this._children,
-    this.length,
+    this._length,
   );
 
   PDFPageNode operator [](int index) => _children[index];
@@ -106,23 +120,14 @@ class PDFPageTreeNode extends PDFPageNode {
   }
 }
 
+/// A single page of the document
 class PDFPageObjectNode extends PDFPageNode {
-  static const xObjectsExcludedKeys = [
-    PDFName('MediaBox'),
-    PDFName('CropBox'),
-    PDFName('TrimBox'),
-    PDFName('Contents'),
-    PDFName('Parent'),
-    PDFName('Annots'),
-    PDFName('StructParents'),
-    PDFName('B'),
-    PDFName('Type'),
-  ];
-
   late final PDFArray? _mediaBox = getOrInherited(const PDFName('MediaBox'));
 
+  /// Reads and parses this page's media box into a rectangle
   late final Rectangle<double> mediaBox = _toRect(_mediaBox!);
 
+  /// Creates a new pdf page object node
   PDFPageObjectNode(
     super.document,
     super.parent,

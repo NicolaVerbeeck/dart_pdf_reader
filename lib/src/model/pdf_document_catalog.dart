@@ -3,13 +3,20 @@ import 'package:dart_pdf_reader/src/model/pdf_page.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 
+/// The document catalog describing the document
 class PDFDocumentCatalog {
   final PDFDictionary _dictionary;
   final ObjectResolver _resolver;
   final PDFDocument _document;
 
-  PDFDocumentCatalog(this._document, this._dictionary, this._resolver);
+  /// Create a new instance of [PDFDocumentCatalog]
+  PDFDocumentCatalog(
+    this._document,
+    this._dictionary,
+    this._resolver,
+  );
 
+  /// Reads the document's pages into a [PDFPages] object
   Future<PDFPages> getPages() async {
     final pagesRoot =
         (await _resolver.resolve(_dictionary[const PDFName('Pages')]))!;
@@ -17,12 +24,14 @@ class PDFDocumentCatalog {
     return PDFPages(pageRoot);
   }
 
+  /// Reads the document's version into a version string
   Future<String?> getVersion() async {
     return _resolver
         .resolve<PDFStringLike>(_dictionary[const PDFName('Version')])
         .then((value) => value?.asString());
   }
 
+  /// Reads the document's language into a language string
   Future<String?> getLanguage() async {
     return _resolver
         .resolve<PDFStringLike>(_dictionary[const PDFName('Lang')])

@@ -39,9 +39,7 @@ class PDFParser {
     }
 
     return PDFDocument(
-      xrefTable: mainXRef,
       mainTrailer: mainTrailer,
-      indirectObjectTable: table,
       objectResolver: ObjectResolver(objectParser, table),
     );
   }
