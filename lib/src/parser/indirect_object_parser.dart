@@ -31,7 +31,7 @@ class IndirectObjectParser {
     final previousPosition = await _buffer.position;
     await _buffer.seek(entry.offset);
 
-    await ReaderHelper.readObjectHeader(_tokenStream);
+    await ReaderHelper.skipObjectHeader(_tokenStream);
     await ReaderHelper.skipUntilFirstNonWhitespace(_tokenStream);
 
     final object = await _parser.parse();

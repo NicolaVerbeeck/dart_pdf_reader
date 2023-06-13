@@ -4,6 +4,8 @@ import 'package:dart_pdf_reader/src/parser/token_stream.dart';
 class ReaderHelper {
   ReaderHelper._();
 
+  /// Try to read the first non-empty line from the buffer, stripping comments
+  /// and skipping empty lines. Returns null if end of stream was reached.
   static Future<String?> readLineSkipEmpty(RandomAccessStream buffer) async {
     String? line;
     while ((line = await readLine(buffer)) != null) {
@@ -15,42 +17,24 @@ class ReaderHelper {
     return null;
   }
 
+  /// Attempts to read a line from the buffer, returning null if end of stream
+  /// was reached. See [RandomAccessStream.readLine].
   static Future<String?> readLine(RandomAccessStream buffer) async {
-    final builder = StringBuffer();
-
-    CharCode ch;
-    var read = false;
-
-    while ((ch = await buffer.readByte()) != -1) {
-      read = true;
-      if (ch == 13) {
-        final next = await buffer.peekByte();
-        //Skip next
-        if (next == 10) {
-          await buffer.readByte();
-        }
-        break;
-      } else if (ch == 10) {
-        break;
-      } else {
-        builder.writeCharCode(ch);
-      }
-    }
-
-    if (!read) {
+    try {
+      return await buffer.readLine();
+    } on EOFException {
       return null;
     }
-
-    return builder.toString();
   }
 
+  /// Parses the hex string (without surrounding <>) into a list of bytes.
   static List<int> fromHex(String string) {
     final len = string.length;
     final out = List<int>.filled(len ~/ 2, 0);
 
     for (int i = 0; i < len; i += 2) {
-      int h = hexToBin(string.codeUnitAt(i));
-      int l = hexToBin(string.codeUnitAt(i + 1));
+      int h = _hexToBin(string.codeUnitAt(i));
+      int l = _hexToBin(string.codeUnitAt(i + 1));
       if (h == -1 || l == -1) {
         throw ArgumentError(
             "contains illegal character for hexBinary: $string");
@@ -61,19 +45,9 @@ class ReaderHelper {
     return out;
   }
 
-  static int hexToBin(CharCode ch) {
-    if (0x30 <= ch && ch <= 0x39) {
-      return ch - 0x30;
-    }
-    if (0x41 <= ch && ch <= 0x46) {
-      return ch - 0x41 + 10;
-    }
-    if (0x61 <= ch && ch <= 0x66) {
-      return ch - 0x61 + 10;
-    }
-    return -1;
-  }
-
+  /// Strip all comments from the given line. Unless the line is '%%EOF' or the
+  /// pdf version start line (%PDF-\d.\d), in which case the lines are
+  /// returned as is
   static String removeComments(String line) {
     if (line.startsWith('%')) {
       if (line.toLowerCase() == '%%eof' ||
@@ -88,11 +62,15 @@ class ReaderHelper {
     return line.substring(0, index);
   }
 
+  /// Skip all bytes until the first one matching [i] is found. If [i] is not
+  /// found, an [EOFException] is thrown. The [buffer] is positioned at the
+  /// [i] byte when this method returns successfully.
+  /// Comments are skipped when searching for the relevant byte
   static Future<void> skipUntilFirst(RandomAccessStream buffer, int i) async {
     while (true) {
       final ch = await buffer.readByte();
       if (ch == -1) {
-        throw Exception('EOF');
+        throw EOFException();
       }
       if (ch == i) {
         await buffer.seek(await buffer.position - 1); // Go back a single one
@@ -104,17 +82,18 @@ class ReaderHelper {
     }
   }
 
-  static Future<void> readObjectHeader(TokenStream tokenStream) async {
-    await skipUntilFirstNonWhitespace(
-        tokenStream); // Consume all whitespace before
-    await skipUntilWhiteSpace(tokenStream); // object id
-    await skipUntilFirstNonWhitespace(tokenStream);
-    await skipUntilWhiteSpace(tokenStream); // generation number
-    await skipUntilFirstNonWhitespace(tokenStream);
-    await skipUntilWhiteSpace(tokenStream); // obj
+  /// Skips past the object header (\d \d obj) on the token stream
+  /// Throws if no object header is found
+  /// Throws if no object data is present after the header
+  static Future<void> skipObjectHeader(TokenStream tokenStream) async {
+    await skipUntilFirst(tokenStream.buffer, 0x6A); //j
+    await tokenStream.consumeToken(); // Consume j
     await skipUntilFirstNonWhitespace(tokenStream); // Remaining whitespace
   }
 
+  /// Skips tokens in the stream until the first non-whitespace token is found
+  /// If a comment is found, the entire line is skipped
+  /// Throws if end of file is reached
   static Future<void> skipUntilFirstNonWhitespace(
     TokenStream tokenStream,
   ) async {
@@ -126,16 +105,20 @@ class ReaderHelper {
       return skipUntilFirstNonWhitespace(tokenStream);
     }
     if (await tokenStream.nextTokenType() == TokenType.eof) {
-      throw Exception('Unexpected end of file');
+      throw EOFException();
     }
   }
 
-  static Future<void> skipUntilWhiteSpace(TokenStream tokenStream) async {
-    do {
-      final type = await tokenStream.nextTokenType();
-      if (type == TokenType.whitespace) return;
-      if (type == TokenType.eof) throw Exception('Unexpected end of file');
-      await tokenStream.consumeToken();
-    } while (true);
+  static int _hexToBin(CharCode ch) {
+    if (0x30 <= ch && ch <= 0x39) {
+      return ch - 0x30;
+    }
+    if (0x41 <= ch && ch <= 0x46) {
+      return ch - 0x41 + 10;
+    }
+    if (0x61 <= ch && ch <= 0x66) {
+      return ch - 0x61 + 10;
+    }
+    return -1;
   }
 }
