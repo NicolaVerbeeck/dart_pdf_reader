@@ -33,6 +33,12 @@ void main() {
       expect(await stream.readLine(), '456');
       expect(await stream.readLine(), '789');
     });
+    test('Test read line multiple', () async {
+      final stream = ByteStream(utf8.encode('123\r\n456\r789'));
+      expect(await stream.readLine(), '123');
+      expect(await stream.readLine(), '456');
+      expect(await stream.readLine(), '789');
+    });
   });
 }
 

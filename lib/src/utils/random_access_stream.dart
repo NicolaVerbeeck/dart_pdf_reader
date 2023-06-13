@@ -41,6 +41,12 @@ abstract class RandomAccessStream {
         return line.toString();
       } else if (c != 0x0D) {
         line.writeCharCode(c);
+      } else if (c == 0x0D) {
+        final next = await peekByte();
+        if (next == 0x0A) {
+          await readByte();
+        }
+        return line.toString();
       }
     }
   }
