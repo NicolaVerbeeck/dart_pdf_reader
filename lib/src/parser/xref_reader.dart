@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 class XRefTable {
   final List<XRefSubsection> sections;
 
-  XRefTable(this.sections);
+  const XRefTable(this.sections);
 
   @override
   String toString() {
