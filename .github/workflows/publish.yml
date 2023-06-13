@@ -7,6 +7,8 @@ on:
 
 jobs:
   publish:
+    permissions:
+      id-token: write # This is required for authentication using OIDC
     uses: dart-lang/setup-dart/.github/workflows/publish.yml@v1
     with:
       environment: 'pub.dev'
