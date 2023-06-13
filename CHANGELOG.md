@@ -1,3 +1,7 @@
+## 0.0.5
+
+- Bugfix: support for \r only newlines
+
 ## 0.0.4
 
 - Code cleanup
