@@ -1,3 +1,8 @@
+## 0.0.4
+
+- Code cleanup
+- Small parsing bug fixes
+
 ## 0.0.3
 
 - Remove unused dependencies
