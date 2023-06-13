@@ -1,7 +1,6 @@
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
+import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
 
 class PDFObjectParser {
@@ -72,7 +71,7 @@ class PDFObjectParser {
     await _tokenStream.consumeToken(); // Consume l
 
     if (await _tokenStream.nextTokenType() == TokenType.normal) {
-      throw Exception('Null was not followed by a delim or whitespace');
+      throw ParseException('Null was not followed by a delim or whitespace');
     }
     return const PDFNull();
   }
@@ -161,7 +160,7 @@ class PDFObjectParser {
         await ReaderHelper.readLine(_buffer);
         continue;
       } else if (type == TokenType.eof) {
-        throw Exception('Unexpected end of file');
+        throw ParseException('Unexpected end of file while reading array');
       }
       final token = await _tokenStream.nextToken();
       if (token == 0x5D) {
@@ -201,7 +200,7 @@ class PDFObjectParser {
         await ReaderHelper.readLine(_buffer);
         continue;
       } else if (type == TokenType.eof) {
-        throw Exception('Unexpected end of file');
+        throw ParseException('Unexpected end of file while reading hex string');
       }
       hexString.writeCharCode(await _tokenStream.consumeToken());
     }
@@ -246,7 +245,7 @@ class PDFObjectParser {
       object = await _indirectObjectParser.getObjectFor(object);
     }
     if (object is! PDFNumber) {
-      throw Exception('Length is not a number');
+      throw ParseException('Length is not a number');
     }
     final length = object.toInt();
     final start = await _buffer.position;
@@ -269,6 +268,9 @@ class PDFObjectParser {
     var escaping = false;
     while (true) {
       final token = await _tokenStream.consumeToken();
+      if (token == -1) {
+        throw ParseException('Unexpected end of file while parsing string');
+      }
       if (escaping) {
         if (token == 0x6E) {
           // n
