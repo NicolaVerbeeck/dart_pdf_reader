@@ -1,3 +1,7 @@
+## 0.0.6
+
+- Add asPDFString to PDFStringLike that returns the string encoded for output in pdf
+
 ## 0.0.5
 
 - Bugfix: support for \r only newlines
