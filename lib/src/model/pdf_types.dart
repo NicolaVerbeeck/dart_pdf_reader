@@ -92,7 +92,7 @@ class PDFLiteralString extends PDFStringLike {
   const PDFLiteralString(this._value);
 
   @override
-  String toString() => '(${asPDFString()})';
+  String toString() => asPDFString();
 
   /// Converts the string to a dart string (best effort)
   @override

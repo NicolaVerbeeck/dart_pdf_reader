@@ -1,3 +1,7 @@
+## 0.0.7
+
+- Bugfix: toString on literal strings would have double ()
+
 ## 0.0.6
 
 - Add asPDFString to PDFStringLike that returns the string encoded for output in pdf
