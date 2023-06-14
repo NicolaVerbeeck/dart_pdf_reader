@@ -272,3 +272,4 @@ example/*.pdf
 support/itext_tests/*.pdf
 support/**/.idea/*
 test.pdf
+.idea/

@@ -22,12 +22,16 @@ class PDFObjectParser {
         await _tokenStream.consumeToken();
         final dict = await _parseDictionary();
         final pos = await _buffer.position;
-        if (await _nextNonWhiteSpace() == 0x73) {
-          // s
-          final stream = await _parseStream(dict);
-          if (stream != null) {
-            return stream;
+        try {
+          if (await _nextNonWhiteSpace() == 0x73) {
+            // s
+            final stream = await _parseStream(dict);
+            if (stream != null) {
+              return stream;
+            }
           }
+        } on EOFException {
+          // ignore
         }
         await _buffer.seek(pos);
         return dict;
@@ -92,7 +96,11 @@ class PDFObjectParser {
     while (await _tokenStream.nextTokenType() == TokenType.normal) {
       chars.writeCharCode(await _tokenStream.consumeToken());
     }
-    return PDFNumber(num.parse(chars.toString()));
+    try {
+      return PDFNumber(num.parse(chars.toString()));
+    } on FormatException {
+      throw ParseException('Invalid number: $chars');
+    }
   }
 
   Future<PDFObjectReference?> _asObjectRef(CharCode token) async {
@@ -225,13 +233,16 @@ class PDFObjectParser {
     final entries = <PDFName, PDFObject>{};
     CharCode token;
     while ((token = await _nextNonWhiteSpace()) != 0x3E) {
-      assert(token == 0x2F); // /
+      // /
+      if (token != 0x2F) {
+        throw ParseException('Dictionary key must start with /');
+      }
       final name = await _parseName();
 
       entries[name] = await parse();
     }
     token = await _tokenStream.consumeToken();
-    assert(token == 0x3E);
+    if (token != 0x3E) throw ParseException('Dictionary must end with >>');
     return PDFDictionary(entries);
   }
 

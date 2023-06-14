@@ -2,11 +2,11 @@ import 'dart:collection';
 import 'dart:convert';
 
 import 'package:charset/charset.dart';
+import 'package:collection/collection.dart';
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for all PDF objects.
-// TODO: Move to dart 3 sealed object
 abstract class PDFObject {
   const PDFObject();
 }
@@ -58,6 +58,13 @@ class PDFNumber extends PDFObject {
   /// The double representation of this number.
   double toDouble() => _value.toDouble();
 
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is PDFNumber && _value == other._value;
+
+  @override
+  int get hashCode => _value.hashCode;
+
   /// Truncates the number to an integer if it is close enough to an integer.
   num _truncate() {
     if (_value is int) {
@@ -103,6 +110,15 @@ class PDFLiteralString extends PDFStringLike {
     if (_value.length < 2) return false;
     return _value[0] == 0xfe && _value[1] == 0xff;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFLiteralString &&
+          const DeepCollectionEquality().equals(_value, other._value);
+
+  @override
+  int get hashCode => const DeepCollectionEquality().hash(_value);
 }
 
 /// Base class for all PDF string like objects ([PDFLiteralString] and [PDFHexString])
@@ -140,6 +156,13 @@ class PDFBoolean extends PDFObject {
 
   @override
   String toString() => value ? 'true' : 'false';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) || other is PDFBoolean && value == other.value;
+
+  @override
+  int get hashCode => value.hashCode;
 }
 
 /// PDF null object
@@ -150,6 +173,12 @@ class PDFNull extends PDFObject {
 
   @override
   String toString() => 'null';
+
+  @override
+  bool operator ==(Object other) => identical(this, other) || other is PDFNull;
+
+  @override
+  int get hashCode => 0;
 }
 
 /// PDF name object. Names MUST NOT start with '/'!
@@ -202,6 +231,15 @@ class PDFArray extends PDFObject
 
   @override
   set length(int newLength) => throw ArgumentError('PDFArray is immutable');
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFArray &&
+          const DeepCollectionEquality().equals(_elements, other._elements);
+
+  @override
+  int get hashCode => const DeepCollectionEquality().hash(_elements);
 }
 
 /// PDF dictionary object
@@ -210,7 +248,7 @@ class PDFDictionary extends PDFObject {
   final Map<PDFName, PDFObject> entries;
 
   /// Creates a new [PDFDictionary] object.
-  PDFDictionary(this.entries);
+  const PDFDictionary(this.entries);
 
   @override
   String toString() =>
@@ -221,6 +259,15 @@ class PDFDictionary extends PDFObject {
 
   /// Checks if the dictionary has an entry for [key]
   bool has(PDFName key) => entries.containsKey(key);
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFDictionary &&
+          const DeepCollectionEquality().equals(entries, other.entries);
+
+  @override
+  int get hashCode => const DeepCollectionEquality().hash(entries);
 }
 
 /// A reference to another PDF object
@@ -240,6 +287,16 @@ class PDFObjectReference extends PDFObject {
 
   @override
   String toString() => '$objectId $generationNumber R';
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFObjectReference &&
+          objectId == other.objectId &&
+          generationNumber == other.generationNumber;
+
+  @override
+  int get hashCode => objectId.hashCode ^ generationNumber.hashCode;
 }
 
 /// A PDF content stream command
@@ -280,7 +337,7 @@ class PDFStreamObject extends PDFObject {
   /// Flag indicating if the stream is likely to contain binary data.
   final bool isBinary;
 
-  PDFStreamObject({
+  const PDFStreamObject({
     required this.dictionary,
     required this.dataSource,
     required this.offset,
@@ -299,6 +356,24 @@ class PDFStreamObject extends PDFObject {
     await dataSource.seek(pos);
     return into;
   }
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFStreamObject &&
+          dictionary == other.dictionary &&
+          dataSource == other.dataSource &&
+          offset == other.offset &&
+          length == other.length &&
+          isBinary == other.isBinary;
+
+  @override
+  int get hashCode =>
+      dictionary.hashCode ^
+      dataSource.hashCode ^
+      offset.hashCode ^
+      length.hashCode ^
+      isBinary.hashCode;
 }
 
 /// PDF indirect object. This object contains the reference to where the object
@@ -315,9 +390,21 @@ class PDFIndirectObject extends PDFObject {
   /// The generation number of the referenced object.
   final int generationNumber;
 
-  PDFIndirectObject({
+  const PDFIndirectObject({
     required this.object,
     required this.objectId,
     required this.generationNumber,
   });
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      other is PDFIndirectObject &&
+          object == other.object &&
+          objectId == other.objectId &&
+          generationNumber == other.generationNumber;
+
+  @override
+  int get hashCode =>
+      object.hashCode ^ objectId.hashCode ^ generationNumber.hashCode;
 }
