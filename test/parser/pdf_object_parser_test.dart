@@ -10,9 +10,8 @@ import 'package:dart_pdf_reader/src/utils/byte_stream.dart';
 import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 import 'package:test/test.dart';
 
-part 'pdf_dictionary_parser_test.dart';
-
-part 'pdf_object_string_parser_test.dart';
+part 'pdf_dictionary_parser.dart';
+part 'pdf_object_string_parser.dart';
 
 PDFObjectParser createParserFromString(String string) {
   return createParser(ByteStream(utf8.encode(string)));
