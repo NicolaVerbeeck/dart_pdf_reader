@@ -92,7 +92,7 @@ class PDFLiteralString extends PDFStringLike {
   const PDFLiteralString(this._value);
 
   @override
-  String toString() => '(${asString()})';
+  String toString() => '(${asPDFString()})';
 
   /// Converts the string to a dart string (best effort)
   @override
@@ -119,6 +119,52 @@ class PDFLiteralString extends PDFStringLike {
 
   @override
   int get hashCode => const DeepCollectionEquality().hash(_value);
+
+  @override
+  String asPDFString() {
+    final buffer = StringBuffer();
+    buffer.write('(');
+    for (final byte in _value) {
+      switch (byte) {
+        case 0x0a: // \n Line feed (LF)
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x6e);
+          break;
+        case 0x0d: // \r Carriage return (CR)
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x72);
+          break;
+        case 0x09: // \t Horizontal tab (HT)
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x74);
+          break;
+        case 0x08: // \b Backspace (BS)
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x62);
+          break;
+        case 0x0c: // \f Form feed (FF)
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x66);
+          break;
+        case 0x28: // \( Left parenthesis
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x28);
+          break;
+        case 0x29: // \) Right parenthesis
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x29);
+          break;
+        case 0x5c: // \\ Backslash
+          buffer.writeCharCode(0x5c);
+          buffer.writeCharCode(0x5c);
+          break;
+        default:
+          buffer.writeCharCode(byte);
+      }
+    }
+    buffer.write(')');
+    return buffer.toString();
+  }
 }
 
 /// Base class for all PDF string like objects ([PDFLiteralString] and [PDFHexString])
@@ -130,6 +176,8 @@ abstract class PDFStringLike extends PDFObject {
 
   /// Creates a copy of this [PDFStringLike] object
   PDFStringLike clone();
+
+  String asPDFString();
 }
 
 /// Hex string defined in PDF
@@ -139,10 +187,21 @@ class PDFHexString extends PDFLiteralString {
   const PDFHexString(super.value);
 
   @override
-  String toString() => '<$_value>';
+  String toString() => asPDFString();
 
   @override
   PDFHexString clone() => PDFHexString(_value);
+
+  @override
+  String asPDFString() {
+    final buffer = StringBuffer();
+    buffer.write('<');
+    for (final byte in _value) {
+      buffer.write(byte.toRadixString(16).padLeft(2, '0'));
+    }
+    buffer.write('>');
+    return buffer.toString();
+  }
 }
 
 /// PDF boolean object
