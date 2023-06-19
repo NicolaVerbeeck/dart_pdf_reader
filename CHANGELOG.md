@@ -1,3 +1,7 @@
+## 0.0.8
+
+- Bugfix: pdf streams with reference to length would crash the parser
+
 ## 0.0.7
 
 - Bugfix: toString on literal strings would have double ()

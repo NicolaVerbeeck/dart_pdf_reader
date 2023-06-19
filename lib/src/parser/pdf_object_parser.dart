@@ -255,6 +255,9 @@ class PDFObjectParser {
     while (object is PDFObjectReference) {
       object = await _indirectObjectParser.getObjectFor(object);
     }
+    if (object is PDFIndirectObject) {
+      object = object.object;
+    }
     if (object is! PDFNumber) {
       throw ParseException('Length is not a number');
     }
