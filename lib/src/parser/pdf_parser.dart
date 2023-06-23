@@ -27,7 +27,7 @@ class PDFParser {
     final table = IndirectObjectTable(mainXRef);
     final objectParser = IndirectObjectParser(_buffer, table);
 
-    PDFDictionary? mainTrailer = null;
+    PDFDictionary? mainTrailer;
     var first = true;
     while (true) {
       final trailer = (first && parsedXRefTrailer != null)
