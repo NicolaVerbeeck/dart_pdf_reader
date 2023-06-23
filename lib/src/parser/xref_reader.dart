@@ -1,5 +1,10 @@
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
+import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
+import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
+import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
+import 'package:dart_pdf_reader/src/parser/pdf_object_parser.dart';
+import 'package:dart_pdf_reader/src/parser/token_stream.dart';
+import 'package:dart_pdf_reader/src/utils/filter/direct_byte_stream.dart';
 import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
 import 'package:meta/meta.dart';
 
@@ -20,13 +25,23 @@ class XRefReader {
 
   XRefReader(this.stream);
 
-  Future<XRefTable> parseXRef() async {
+  Future<(XRefTable, PDFDictionary?)> parseXRef() async {
     final offset = await _findXRefOffset();
     await stream.seek(offset);
     final sectionReader = XRefSectionReader();
     final sections = await sectionReader.readSubsections(stream);
+    if (sections.isEmpty) {
+      // No xref entries found
+      await stream.seek(offset);
+      final line = await ReaderHelper.readLineSkipEmpty(stream);
+      if (line == null || !RegExp(r'\d+ \d+ obj').hasMatch(line)) {
+        throw ParseException('Expected \'trailer\'');
+      }
+      await stream.seek(offset);
+      return _parseXRefAndTrailerFromStreamAtObject();
+    }
 
-    return XRefTable(sections);
+    return (XRefTable(sections), null);
   }
 
   Future<void> parseXRefTableInto(XRefTable table) async {
@@ -50,6 +65,117 @@ class XRefReader {
       throw Exception('%%EOF not found');
     }
     return int.parse(lines[eofIndex - 1]);
+  }
+
+  Future<(XRefTable, PDFDictionary?)> _parseXRefAndTrailerFromCompressedStream(
+    PDFDictionary dictionary,
+    PDFStreamObject stream,
+  ) async {
+    final size =
+        (dictionary.entries[const PDFName('Size')] as PDFNumber).toInt();
+    final index = dictionary.entries[const PDFName('Index')] as PDFArray? ??
+        PDFArray([const PDFNumber(0), PDFNumber(size)]);
+
+    final w = dictionary.entries[const PDFName('W')] as PDFArray?;
+    if (w == null) throw ParseException('Xref stream requires W entry');
+    if (w.length != 3) {
+      throw ParseException('Xref stream requires W entry with 3 elements');
+    }
+    final firstW = (w[0] as PDFNumber).toInt();
+    final secondW = (w[1] as PDFNumber).toInt();
+    final thirdW = (w[2] as PDFNumber).toInt();
+
+    final streamData = await stream.read(const _FakeObjectResolver());
+    final table = _parseXRefFromCompressedStream(
+      index,
+      streamData,
+      firstW,
+      secondW,
+      thirdW,
+    );
+    final trailerEntries = <PDFName, PDFObject>{}..addAll(dictionary.entries);
+    trailerEntries.remove(const PDFName('DecodeParms'));
+    trailerEntries.remove(const PDFName('Filter'));
+    trailerEntries.remove(const PDFName('Length'));
+    trailerEntries.remove(const PDFName('Prev'));
+
+    final prev = dictionary[const PDFName('Prev')] as PDFNumber?;
+    if (prev != null) {
+      await this.stream.seek(prev.toInt());
+      final (newXRef, _) = await _parseXRefAndTrailerFromStreamAtObject();
+      table.sections.addAll(newXRef.sections);
+    }
+    return (table, PDFDictionary(trailerEntries));
+  }
+
+  XRefTable _parseXRefFromCompressedStream(
+    PDFArray index,
+    List<int> streamData,
+    int firstW,
+    int secondW,
+    int thirdW,
+  ) {
+    final sections = <XRefSubsection>[];
+    final stream = ByteInputStream(streamData);
+    for (var idx = 0; idx < index.length; idx += 2) {
+      var start = (index[idx] as PDFNumber).toInt();
+      var length = (index[idx + 1] as PDFNumber).toInt();
+
+      final entries = <XRefEntry>[];
+      while (length-- > 0) {
+        final type = (firstW == 0) ? 1 : stream.readBytesToInt(firstW);
+        final field2 = (secondW == 0) ? 0 : stream.readBytesToInt(secondW);
+        final field3 = (thirdW == 0) ? 0 : stream.readBytesToInt(thirdW);
+
+        final XRefEntry entry;
+        switch (type) {
+          case 0:
+            entry = XRefEntry(
+                id: start, offset: field2, generation: field3, free: true);
+            break;
+          case 1:
+            entry = XRefEntry(
+                id: start, offset: field2, generation: field3, free: false);
+            break;
+          case 2:
+            entry = XRefEntry(
+              id: start,
+              offset: field3,
+              generation: 0,
+              free: false,
+              compressedObjectStreamId: field2,
+            );
+            break;
+          default:
+            throw ParseException(
+                'Invalid XRef entry type: $type (type 2 not supported for now). Id: $start, offset: $field3');
+        }
+        entries.add(entry);
+        ++start;
+      }
+      sections.add(XRefSubsection(
+          startIndex: (index[idx] as PDFNumber).toInt(),
+          numEntries: (index[idx + 1] as PDFNumber).toInt(),
+          entries: entries,
+          endIndex: (index[idx + 1] as PDFNumber).toInt()));
+    }
+    return XRefTable(sections);
+  }
+
+  Future<(XRefTable, PDFDictionary?)>
+      _parseXRefAndTrailerFromStreamAtObject() async {
+    await ReaderHelper.skipObjectHeader(TokenStream(stream));
+    final xrefStream = (await PDFObjectParser(
+            stream,
+            IndirectObjectParser(
+                stream, IndirectObjectTable(const XRefTable([])))).parse())
+        as PDFStreamObject;
+    if (xrefStream.dictionary.entries[const PDFName('Type')] !=
+        const PDFName('XRef')) {
+      throw ParseException('Compressed xref stream is of wrong type');
+    }
+    return _parseXRefAndTrailerFromCompressedStream(
+        xrefStream.dictionary, xrefStream);
   }
 }
 
@@ -147,17 +273,19 @@ class XRefEntry {
   final int offset;
   final int generation;
   final bool free;
+  final int? compressedObjectStreamId;
 
   const XRefEntry({
     required this.id,
     required this.offset,
     required this.generation,
     required this.free,
+    this.compressedObjectStreamId,
   });
 
   @override
   String toString() {
-    return 'XRefEntry{id: $id, offset: $offset, generation: $generation, free: $free}';
+    return 'XRefEntry{id: $id, offset: $offset, generation: $generation, free: $free, compressedObjectStreamId: $compressedObjectStreamId}';
   }
 }
 
@@ -188,4 +316,15 @@ class XRefSubsection {
     }
     return null;
   }
+}
+
+class _FakeObjectResolver implements ObjectResolver {
+  const _FakeObjectResolver();
+
+  @override
+  Future<PDFObject?> getObject(int id) => Future.value(null);
+
+  @override
+  Future<T?> resolve<T extends PDFObject>(PDFObject? toResolve) =>
+      Future.value(toResolve as T);
 }

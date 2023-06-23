@@ -121,4 +121,19 @@ class ReaderHelper {
     }
     return -1;
   }
+
+  static Future<int> readNumber(TokenStream tokenStream) async {
+    await skipUntilFirstNonWhitespace(tokenStream);
+
+    final numberString = StringBuffer();
+    while (true) {
+      final tokenType = await tokenStream.nextTokenType();
+      if (tokenType != TokenType.normal) break;
+      numberString.writeCharCode(await tokenStream.consumeToken());
+    }
+    if (numberString.isEmpty) {
+      throw ParseException('Expected number, not nothing');
+    }
+    return int.parse(numberString.toString());
+  }
 }

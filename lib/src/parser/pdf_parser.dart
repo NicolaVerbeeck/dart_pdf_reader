@@ -23,13 +23,16 @@ class PDFParser {
   /// items are parsed on demand. This means closing the stream will break
   /// reading items in the returned [PDFDocument].
   Future<PDFDocument> parse() async {
-    final mainXRef = await XRefReader(_buffer).parseXRef();
+    final (mainXRef, parsedXRefTrailer) = await XRefReader(_buffer).parseXRef();
     final table = IndirectObjectTable(mainXRef);
     final objectParser = IndirectObjectParser(_buffer, table);
 
-    PDFDictionary? mainTrailer;
+    PDFDictionary? mainTrailer = null;
+    var first = true;
     while (true) {
-      final trailer = await _parseTrailer(objectParser);
+      final trailer = (first && parsedXRefTrailer != null)
+          ? parsedXRefTrailer
+          : await _parseTrailer(objectParser);
       mainTrailer ??= trailer;
       final prev = trailer[const PDFName('Prev')] as PDFNumber?;
       if (prev == null) break;
@@ -46,7 +49,9 @@ class PDFParser {
 
   Future<PDFDictionary> _parseTrailer(IndirectObjectParser parser) async {
     final line = await ReaderHelper.readLineSkipEmpty(_buffer);
-    if (line != 'trailer') throw Exception('Expected \'trailer\'');
+    if (line != 'trailer') {
+      throw Exception('Expected \'trailer\'');
+    }
     return await PDFObjectParser(_buffer, parser).parse() as PDFDictionary;
   }
 }

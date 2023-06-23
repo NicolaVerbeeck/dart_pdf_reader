@@ -17,7 +17,9 @@ class IndirectObjectTable {
   }
 
   void put(int objectId, PDFIndirectObject object) {
-    _loadedObjects[objectId] = object;
+    if (!_loadedObjects.containsKey(objectId)) {
+      _loadedObjects[objectId] = object;
+    }
   }
 
   T? resolve<T>(PDFObject? toResolve) {

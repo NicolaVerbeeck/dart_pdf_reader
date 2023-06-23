@@ -4,6 +4,8 @@ import 'dart:convert';
 import 'package:charset/charset.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
+import 'package:dart_pdf_reader/src/utils/filter/stream_filter.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for all PDF objects.
@@ -377,7 +379,7 @@ class PDFCommand extends PDFObject {
 }
 
 /// PDF stream object. Streams do not eagerly read the data from the data source
-/// but instead provide a [read] method that can be used to read the data.
+/// but instead provide a [readRaw] method that can be used to read the data.
 /// Closing the stream before reading data will result in an error
 @immutable
 class PDFStreamObject extends PDFObject {
@@ -405,15 +407,51 @@ class PDFStreamObject extends PDFObject {
   });
 
   /// Reads the raw bytes of this stream. This means no filtering is applied.
-  /// When [read] returns, the stream will be positioned back to where it was
-  /// before [read] started
-  Future<List<int>> read() async {
+  /// When [readRaw] returns, the stream will be positioned back to where it was
+  /// before [readRaw] started
+  Future<List<int>> readRaw() async {
     final pos = await dataSource.position;
     await dataSource.seek(offset);
     final into = List<int>.filled(length, 0);
     await dataSource.readBuffer(length, into);
     await dataSource.seek(pos);
     return into;
+  }
+
+  /// Reads the filtered bytes of this stream. This means that the data will be
+  /// decoded according to the [PDFDictionary] of this stream. When [read] returns,
+  /// the stream will be positioned back to where it was before [read] started
+  Future<List<int>> read(ObjectResolver resolver) async {
+    final raw = await readRaw();
+    final filter =
+        await resolver.resolve<PDFObject>(dictionary[const PDFName('Filter')]);
+    if (filter == null) return raw;
+    final filters = <StreamFilter>[];
+    if (filter is PDFArray) {
+      for (final f in filter) {
+        filters.add(StreamFilter(f as PDFName));
+      }
+    } else if (filter is PDFName) {
+      filters.add(StreamFilter(filter));
+    } else {
+      throw ParseException('Filter needs to be a name or an array of names');
+    }
+    final decodeParams = await resolver
+        .resolve<PDFObject>(dictionary[const PDFName('DecodeParms')]);
+    final params = <PDFObject>[];
+    if (decodeParams is PDFArray) {
+      for (final p in decodeParams) {
+        params.add(p);
+      }
+    } else if (decodeParams != null) {
+      params.add(decodeParams);
+    }
+    var bytes = raw;
+    for (var i = 0; i < filters.length; ++i) {
+      final filterParams = (i < params.length) ? params[i] : null;
+      bytes = filters[i].decode(bytes, filterParams, dictionary);
+    }
+    return bytes;
   }
 
   @override

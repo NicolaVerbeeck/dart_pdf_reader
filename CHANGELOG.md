@@ -1,3 +1,8 @@
+## 0.1.0
+
+- Breaking: require dart 3
+- Experimental: support loading compressed xref streams and compressed object streams
+
 ## 0.0.8
 
 - Bugfix: pdf streams with reference to length would crash the parser
