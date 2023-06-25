@@ -1,3 +1,7 @@
+## 0.1.1
+
+- Add support for ascii85, asciihex, lzw and run length filters
+
 ## 0.1.0
 
 - Breaking: require dart 3
