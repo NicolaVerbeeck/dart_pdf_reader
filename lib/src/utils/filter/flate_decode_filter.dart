@@ -15,7 +15,7 @@ class FlateDecodeFilter extends StreamFilter {
   }
 
   // From iTextPDF 7
-  List<int> _decodeWithPredictor(List<int> bytes, PDFDictionary params) {
+  static List<int> _decodeWithPredictor(List<int> bytes, PDFDictionary params) {
     final predictor = params[const PDFName('Predictor')];
     if (predictor is! PDFNumber) return bytes;
 
