@@ -6,15 +6,16 @@ import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 class ByteStream extends RandomAccessStream {
   final List<int> _bytes;
   var _position = 0;
+  final int _length;
 
   @override
-  late final Future<int> length = Future.value(_bytes.length);
+  Future<int> get length => Future.value(_length);
 
   @override
   Future<int> get position => Future.value(_position);
 
   /// Create a new [ByteStream] from a list of bytes
-  ByteStream(this._bytes);
+  ByteStream(this._bytes) : _length = _bytes.length;
 
   @override
   Future<int> peekByte() {
