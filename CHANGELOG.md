@@ -1,3 +1,7 @@
+## 0.1.2
+
+- Don't hold future in ByteStream to allow sending across isolates
+
 ## 0.1.1
 
 - Add support for ascii85, asciihex, lzw and run length filters
