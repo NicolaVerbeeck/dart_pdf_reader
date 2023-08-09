@@ -1,8 +1,6 @@
-import 'package:dart_pdf_reader/src/model/pdf_document.dart';
+import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/model/pdf_page.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
-import 'package:dart_pdf_reader/src/model/pdf_bookmark.dart';
 
 /// The document catalog describing the document
 class PDFDocumentCatalog {
@@ -25,14 +23,16 @@ class PDFDocumentCatalog {
     return PDFPages(pageRoot);
   }
 
-  /// Reads the document's outlines into a [List] of [PDFBookmark]s
-  Future<List<PDFBookmark>> getBookmarks() async {
-    PDFObject? outlines =
-        await _resolver.resolve(_dictionary[const PDFName('Outlines')]);
-    if (outlines == null) {
-      return [];
+  /// Reads the document's outlines into a [List] of [PDFOutlineItem]s
+  Future<List<PDFOutlineItem>?> getOutlines() async {
+    final dict = await _resolver
+        .resolve<PDFDictionary>(_dictionary[const PDFName('Outlines')]);
+
+    if (dict == null) {
+      return null;
     }
-    return _readBookmarks(outlines);
+
+    return _readOutlines(dict);
   }
 
   /// Reads the document's version into a version string
@@ -91,65 +91,50 @@ class PDFDocumentCatalog {
         PDFPageObjectNode(_document, parent, _resolver, childObject));
   }
 
-  Future<List<PDFBookmark>> _readBookmarks(PDFObject outlines) async {
-    // get the pages root
-    PDFDictionary pagesRoot =
-        (await _resolver.resolve(_dictionary[const PDFName('Pages')]))!;
-
-    // get the pages kids array
-    PDFArray kidsArray =
-        await _resolver.resolve(pagesRoot[const PDFName('Kids')]) as PDFArray;
-
-    // get the first outline reference
-    PDFObjectReference? firstRef = (outlines
-        as PDFDictionary)[const PDFName('First')] as PDFObjectReference?;
-
-    // if there are no outlines, there is no bookmarks, return an empty list
-    if (firstRef == null) {
-      return [];
-    }
+  Future<List<PDFOutlineItem>?> _readOutlines(PDFDictionary dictionary) async {
+    final firstRef = dictionary[const PDFName('First')] as PDFObjectReference;
 
     PDFObjectReference? currentOutlineRef = firstRef;
 
-    final bookmarks = <PDFBookmark>[];
+    final outlines = <PDFOutlineItem>[];
 
-    // walk the outline tree
     while (currentOutlineRef != null) {
       final currentOutline = await _resolver.resolve(currentOutlineRef);
+
+      /// If we can't resolve the current outline, cancel
       if (currentOutline == null) {
         break;
       }
+
       final title = (currentOutline as PDFDictionary)[const PDFName('Title')]
           as PDFLiteralString;
-      final destRef = currentOutline[const PDFName('A')];
-      final nextRef = currentOutline[const PDFName('Next')];
+      final nextRef =
+          currentOutline[const PDFName('Next')] as PDFObjectReference?;
 
-      final destination = await _resolver.resolve(destRef) as PDFDictionary;
-      final destinaionType = (destination[const PDFName('S')] as PDFName).value;
+      /// set the next outline
+      currentOutlineRef = nextRef;
+      final actionRef =
+          currentOutline[const PDFName('A')] as PDFObjectReference?;
+      final destRef =
+          currentOutline[const PDFName('Dest')] as PDFObjectReference?;
 
-      // if the destination type is not GoTo, skip this outline
-      // TODO: support other types of destinations
-      if (destinaionType != 'GoTo') {
+      if (destRef != null) {
+        // TODO: Destination outline is not supported yet
         continue;
-      }
-
-      // find the page number of the destination
-      for (int i = 0; i < kidsArray.length; i++) {
-        if (kidsArray[i] ==
-            ((destination[const PDFName('D')] as PDFArray).first)) {
-          bookmarks.add(PDFBookmark(
+      } else if (actionRef != null) {
+        final action = await _resolver.resolve(actionRef) as PDFDictionary;
+        try {
+          outlines.add(PDFOutlineItem(
             title: title.asString(),
-            pageNumber: i + 1,
-            ref: destRef as PDFObjectReference?,
+            action: PDFOutlineAction.fromDictionary(action),
           ));
-          break;
+        } catch (e) {
+          // TODO: Outline action is not supported yet
+          continue;
         }
       }
-
-      // go to the next outline
-      currentOutlineRef = nextRef as PDFObjectReference?;
     }
 
-    return bookmarks;
+    return outlines;
   }
 }
