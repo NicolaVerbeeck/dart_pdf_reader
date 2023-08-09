@@ -274,3 +274,6 @@ support/**/.idea/*
 test.pdf
 .idea/
 support/
+
+# VS Code
+.vscode/

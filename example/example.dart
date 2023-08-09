@@ -15,8 +15,10 @@ Future<void> main(List<String> args) async {
 
   final catalog = await doc.catalog;
   final pages = await catalog.getPages();
+  final bookmarks = await catalog.getBookmarks();
   final firstPage = pages.getPageAtIndex(0);
 
+  print(bookmarks);
   print(firstPage);
 
   print('Walking page tree bottom to top');

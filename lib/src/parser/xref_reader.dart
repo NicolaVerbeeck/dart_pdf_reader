@@ -157,7 +157,7 @@ class XRefReader {
           startIndex: (index[idx] as PDFNumber).toInt(),
           numEntries: (index[idx + 1] as PDFNumber).toInt(),
           entries: entries,
-          endIndex: (index[idx + 1] as PDFNumber).toInt()));
+          endIndex: start));
     }
     return XRefTable(sections);
   }
