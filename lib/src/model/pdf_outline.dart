@@ -2,24 +2,24 @@ import 'package:meta/meta.dart';
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 
 enum PDFOutlineActionType {
-  GoTo,
-  GoToR,
-  GoToE,
-  Launch,
-  Thread,
-  URI,
-  Sound,
-  Movie,
-  Hide,
-  Named,
-  SubmitForm,
-  ResetForm,
-  ImportData,
-  JavaScript,
-  SetOCGState,
-  Rendition,
-  Trans,
-  GoTo3DView,
+  goto,
+  gotor,
+  gotoe,
+  launch,
+  thread,
+  uri,
+  sound,
+  movie,
+  hide,
+  named,
+  submitform,
+  resetform,
+  importdata,
+  javascript,
+  setocgstate,
+  rendition,
+  trans,
+  goto3dview,
 }
 
 /// A PDF outline item
@@ -53,9 +53,10 @@ abstract class PDFOutlineAction {
   factory PDFOutlineAction.fromDictionary(
     PDFDictionary dictionary,
   ) {
-    final type = (dictionary[const PDFName('S')] as PDFName).value;
+    final type = PDFOutlineActionType.values.byName(
+        (dictionary[const PDFName('S')] as PDFName).value.toLowerCase());
     switch (type) {
-      case 'GoTo':
+      case PDFOutlineActionType.goto:
         return PDFOutlineGoToAction(
           destination: (dictionary[const PDFName('D')] as PDFArray).first
               as PDFObjectReference,
@@ -82,7 +83,7 @@ class PDFOutlineGoToAction extends PDFOutlineAction {
   });
 
   @override
-  PDFOutlineActionType get type => PDFOutlineActionType.GoTo;
+  PDFOutlineActionType get type => PDFOutlineActionType.goto;
 
   @override
   String toString() {

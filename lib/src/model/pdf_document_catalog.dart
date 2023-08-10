@@ -1,5 +1,7 @@
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/model/pdf_document.dart';
+import 'package:dart_pdf_reader/src/model/pdf_outline.dart';
 import 'package:dart_pdf_reader/src/model/pdf_page.dart';
+import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 
 /// The document catalog describing the document
@@ -129,7 +131,7 @@ class PDFDocumentCatalog {
             action: PDFOutlineAction.fromDictionary(action),
           ));
         } catch (e) {
-          // TODO: Outline action is not supported yet
+          // TODO: This outline action is not supported yet
           continue;
         }
       }
