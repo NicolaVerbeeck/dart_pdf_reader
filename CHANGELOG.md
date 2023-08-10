@@ -1,3 +1,6 @@
+## 0.1.3
+- Add support for pdf bookmarks (outlines)
+
 ## 0.1.2
 
 - Don't hold future in ByteStream to allow sending across isolates
