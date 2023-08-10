@@ -26,6 +26,10 @@ class PDFDocumentCatalog {
   }
 
   /// Reads the document's outlines into a [List] of [PDFOutlineItem]s
+  /// Currently only action outlines are supported, destination outlines are not
+  /// supported yet. Outlines that are not supported will be ignored.
+  /// You can register custom logic for creating [PDFOutlineItem]s by using
+  /// [PDFOutlineAction.registerOutlineCreator].
   Future<List<PDFOutlineItem>?> getOutlines() async {
     final dict = await _resolver
         .resolve<PDFDictionary>(_dictionary[const PDFName('Outlines')]);
@@ -93,7 +97,7 @@ class PDFDocumentCatalog {
         PDFPageObjectNode(_document, parent, _resolver, childObject));
   }
 
-  Future<List<PDFOutlineItem>?> _readOutlines(PDFDictionary dictionary) async {
+  Future<List<PDFOutlineItem>> _readOutlines(PDFDictionary dictionary) async {
     final firstRef = dictionary[const PDFName('First')] as PDFObjectReference;
 
     PDFObjectReference? currentOutlineRef = firstRef;
