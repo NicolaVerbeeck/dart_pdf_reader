@@ -1,5 +1,5 @@
-import 'package:meta/meta.dart';
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:meta/meta.dart';
 
 enum PDFOutlineActionType {
   goto,
@@ -43,8 +43,27 @@ class PDFOutlineItem {
   }
 }
 
+/// Type of a PDF outline action creator function
+typedef PDFOutlineCreator = PDFOutlineAction? Function(
+  PDFOutlineActionType,
+  PDFDictionary,
+);
+
 /// A PDF outline action
 abstract class PDFOutlineAction {
+  static final _outlineCreators = <PDFOutlineActionType, PDFOutlineCreator>{};
+
+  /// Register custom outline [creator] for a specific action [type]. This
+  /// allows to extend the library with custom outline actions, or overwrite
+  /// existing ones. Creators registered here take precedence over the default
+  /// ones.
+  static void registerOutlineCreator(
+    PDFOutlineActionType type,
+    PDFOutlineCreator creator,
+  ) {
+    _outlineCreators[type] = creator;
+  }
+
   const PDFOutlineAction();
 
   /// The type of the action
@@ -53,8 +72,17 @@ abstract class PDFOutlineAction {
   factory PDFOutlineAction.fromDictionary(
     PDFDictionary dictionary,
   ) {
-    final type = PDFOutlineActionType.values.byName(
-        (dictionary[const PDFName('S')] as PDFName).value.toLowerCase());
+    final typeName =
+        (dictionary[const PDFName('S')] as PDFName).value.toLowerCase();
+    final PDFOutlineActionType type;
+    try {
+      type = PDFOutlineActionType.values.byName(typeName);
+    } catch (e) {
+      throw ActionTypeNotSupported('Unknown action type: $typeName');
+    }
+    final res = _outlineCreators[type]?.call(type, dictionary);
+    if (res != null) return res;
+
     switch (type) {
       case PDFOutlineActionType.goto:
         return PDFOutlineGoToAction(
@@ -62,7 +90,7 @@ abstract class PDFOutlineAction {
               as PDFObjectReference,
         );
       default:
-        throw Exception('Unknown outline action type: $type');
+        throw ActionTypeNotSupported('Unhandled outline action type: $type');
     }
   }
 

@@ -17,3 +17,12 @@ class ParseException extends IOException {
   @override
   String toString() => 'ParseException: $_message';
 }
+
+class ActionTypeNotSupported implements Exception {
+  final String _message;
+
+  ActionTypeNotSupported(this._message);
+
+  @override
+  String toString() => 'ActionTypeNotSupported: $_message';
+}
