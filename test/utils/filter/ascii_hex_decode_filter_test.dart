@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/utils/filter/stream_filter.dart';
@@ -23,7 +24,7 @@ void main() {
       test('Decoding illegal character test', () {
         expect(
             () => StreamFilter(const PDFName('ASCIIHexDecode')).decode(
-                  utf8.encode('4c6f72656d20697073756d2eg>'),
+                  Uint8List.fromList(utf8.encode('4c6f72656d20697073756d2eg>')),
                   null,
                   const PDFDictionary({}),
                 ),
@@ -32,7 +33,8 @@ void main() {
 
       test('Decoding skip whitespaces test', () {
         final decoded = StreamFilter(const PDFName('ASCIIHexDecode')).decode(
-          utf8.encode('4c 6f 72 65 6d 20 69 70 73 75 6d 2e>'),
+          Uint8List.fromList(
+              utf8.encode('4c 6f 72 65 6d 20 69 70 73 75 6d 2e>')),
           null,
           const PDFDictionary({}),
         );
