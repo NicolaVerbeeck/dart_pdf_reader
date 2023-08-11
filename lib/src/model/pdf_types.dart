@@ -409,7 +409,11 @@ class PDFStreamObject extends PDFObject {
 
   /// Reads the raw bytes of this stream. This means no filtering is applied.
   /// When [readRaw] returns, the stream will be positioned back to where it was
-  /// before [readRaw] started
+  /// before [readRaw] started.
+  ///
+  /// NOTE: The returned data should not be modified as it could be backed by
+  /// the original data. If you need to modify the data, make a copy of it
+  /// first.
   Future<Uint8List> readRaw() async {
     final pos = await dataSource.position;
     await dataSource.seek(offset);
@@ -421,6 +425,10 @@ class PDFStreamObject extends PDFObject {
   /// Reads the filtered bytes of this stream. This means that the data will be
   /// decoded according to the [PDFDictionary] of this stream. When [read] returns,
   /// the stream will be positioned back to where it was before [read] started
+  ///
+  /// NOTE: The returned data should not be modified as it could be backed by
+  /// the original data. If you need to modify the data, make a copy of it
+  /// first.
   Future<Uint8List> read(ObjectResolver resolver) async {
     final raw = await readRaw();
     final filter =

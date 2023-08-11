@@ -55,7 +55,7 @@ class _LZWDecoder {
     List<int>? string;
     while ((code = _getNextCode()) != 257) {
       if (code == 256) {
-        _initializeStringTable();
+        _reInitializeStringTable();
         code = _getNextCode();
         if (code == 257) {
           break;
@@ -84,8 +84,18 @@ class _LZWDecoder {
     _bitsToGet = 9;
   }
 
+  void _reInitializeStringTable() {
+    for (var i = 0; i < _stringTable.length; i++) {
+      _stringTable[i] = i < 256 ? <int>[i] : [];
+    }
+    _tableIndex = 258;
+    _bitsToGet = 9;
+  }
+
   void _writeString(List<int> string) {
-    _output.writeAll(string);
+    for (var i = 0; i < string.length; ++i) {
+      _output.write(string[i]);
+    }
   }
 
   void _copyStringToTable(List<int> string) {

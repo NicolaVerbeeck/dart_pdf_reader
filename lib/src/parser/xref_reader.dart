@@ -112,7 +112,7 @@ class XRefReader {
 
   XRefTable _parseXRefFromCompressedStream(
     PDFArray index,
-    List<int> streamData,
+    Uint8List streamData,
     int firstW,
     int secondW,
     int thirdW,

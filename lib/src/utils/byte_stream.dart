@@ -16,8 +16,8 @@ class ByteStream extends RandomAccessStream {
   Future<int> get position => Future.value(_position);
 
   /// Create a new [ByteStream] from a list of bytes
-  ByteStream(List<int> bytes)
-      : _bytes = bytes is Uint8List ? bytes : Uint8List.fromList(bytes),
+  ByteStream(Uint8List bytes)
+      : _bytes = bytes,
         _length = bytes.length;
 
   @override

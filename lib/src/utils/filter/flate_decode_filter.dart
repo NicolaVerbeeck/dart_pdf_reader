@@ -9,7 +9,7 @@ class FlateDecodeFilter extends StreamFilter {
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {
-    final decoded = Uint8List.fromList(zlib.decode(bytes));
+    final decoded = zlib.decode(bytes).asUint8List();
     if (params is PDFDictionary) return _decodeWithPredictor(decoded, params);
     return decoded;
   }
@@ -44,8 +44,8 @@ class FlateDecodeFilter extends StreamFilter {
       return bytes;
     }
 
-    var current = List<int>.filled(bytesPerRow, 0);
-    var prior = List<int>.filled(bytesPerRow, 0);
+    var current = Uint8List(bytesPerRow);
+    var prior = Uint8List(bytesPerRow);
     final dataStream = ByteInputStream(bytes);
     final fout = ByteOutputStream(bytes.length);
 
