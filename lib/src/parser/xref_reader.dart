@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
@@ -224,7 +226,7 @@ class _XRefSubsectionReader {
     final int numEntries = int.parse(parts[1]);
 
     final entries = <XRefEntry>[];
-    final lineBytes = List.filled(20, 0);
+    final lineBytes = Uint8List(20);
     int id = startIndex;
     for (int i = 0; i < numEntries; i++) {
       await stream.readBuffer(20, lineBytes);

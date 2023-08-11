@@ -4,8 +4,8 @@ class LZWDecodeFilter extends StreamFilter {
   const LZWDecodeFilter._() : super._();
 
   @override
-  List<int> decode(
-    List<int> bytes,
+  Uint8List decode(
+    Uint8List bytes,
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {
@@ -16,7 +16,7 @@ class LZWDecodeFilter extends StreamFilter {
     return decompressed;
   }
 
-  List<int> _lzwDecompress(List<int> compressedData) {
+  Uint8List _lzwDecompress(List<int> compressedData) {
     final output = ByteOutputStream(compressedData.length);
     _LZWDecoder(compressedData, output).decode();
     return output.getBytes();

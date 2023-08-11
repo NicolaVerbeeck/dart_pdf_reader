@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
 
 /// An abstraction of a stream of bytes that can be read from.
@@ -9,7 +11,17 @@ abstract class RandomAccessStream {
   /// Attempts to read [count] bytes from the stream into [into]. Returns the
   /// number of bytes read (which can be < [count] if the end of the stream
   /// has been reached).
-  Future<int> readBuffer(int count, List<int> into);
+  Future<int> readBuffer(int count, Uint8List into);
+
+  /// A potentially faster variant of [readBuffer].
+  ///
+  /// Subclasses are free to implement this in any way that is faster than
+  /// calling [readBuffer]
+  Future<Uint8List> fastRead(int count) async {
+    final list = Uint8List(count);
+    final actual = await readBuffer(count, list);
+    return Uint8List.view(list.buffer, 0, actual);
+  }
 
   /// Seeks to the given [offset] in the stream (from the beginning).
   Future<void> seek(int offset);

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/utils/filter/stream_filter.dart';
@@ -22,7 +23,7 @@ void main() {
 
       test('Decoding with zero bytes test', () {
         final decoded = StreamFilter(const PDFName('ASCII85Decode')).decode(
-          utf8.encode('z9Q+r_D#'),
+          Uint8List.fromList(utf8.encode('z9Q+r_D#')),
           null,
           const PDFDictionary({}),
         );

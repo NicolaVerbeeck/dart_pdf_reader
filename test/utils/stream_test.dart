@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
 import 'package:dart_pdf_reader/src/utils/byte_stream.dart';
@@ -89,23 +90,35 @@ void createStreamTests(RandomAccessStream Function() streamProducer) {
   });
   test('Test read buffer', () async {
     final stream = streamProducer();
-    final buffer = List<int>.filled(2, 0);
+    final buffer = Uint8List(2);
     expect(await stream.readBuffer(2, buffer), 2);
     expect(buffer, [1, 2]);
     expect(await stream.readByte(), 3);
   });
   test('Test read buffer overflow', () async {
     final stream = streamProducer();
-    final buffer = List<int>.filled(4, 0);
+    final buffer = Uint8List(4);
     expect(await stream.readBuffer(4, buffer), 3);
     expect(buffer, [1, 2, 3, 0]);
     expect(await stream.readByte(), -1);
   });
   test('Test read buffer after end', () async {
     final stream = streamProducer();
-    final buffer = List<int>.filled(4, 0);
+    final buffer = Uint8List(4);
     await stream.seek(3);
     expect(await stream.readBuffer(4, buffer), 0);
     expect(buffer, [0, 0, 0, 0]);
+  });
+  test('Test fastRead', () async {
+    final stream = streamProducer();
+    final buffer = await stream.fastRead(2);
+    expect(buffer, [1, 2]);
+    expect(await stream.readByte(), 3);
+  });
+  test('Test fastRead after end', () async {
+    final stream = streamProducer();
+    await stream.seek(3);
+    final buffer = await stream.fastRead(4);
+    expect(buffer.isEmpty, true);
   });
 }

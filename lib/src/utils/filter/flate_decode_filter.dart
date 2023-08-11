@@ -4,18 +4,18 @@ class FlateDecodeFilter extends StreamFilter {
   const FlateDecodeFilter._() : super._();
 
   @override
-  List<int> decode(
-    List<int> bytes,
+  Uint8List decode(
+    Uint8List bytes,
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {
-    final decoded = zlib.decode(bytes);
+    final decoded = Uint8List.fromList(zlib.decode(bytes));
     if (params is PDFDictionary) return _decodeWithPredictor(decoded, params);
     return decoded;
   }
 
   // From iTextPDF 7
-  static List<int> _decodeWithPredictor(List<int> bytes, PDFDictionary params) {
+  static Uint8List _decodeWithPredictor(Uint8List bytes, PDFDictionary params) {
     final predictor = params[const PDFName('Predictor')];
     if (predictor is! PDFNumber) return bytes;
 

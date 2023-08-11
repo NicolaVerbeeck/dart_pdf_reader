@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:test/test.dart';
 
@@ -8,7 +10,7 @@ void main() {
     late ByteStream stream;
 
     setUp(() {
-      stream = ByteStream([1, 2, 3]);
+      stream = ByteStream(Uint8List.fromList([1, 2, 3]));
     });
 
     createStreamTests(() => stream);
