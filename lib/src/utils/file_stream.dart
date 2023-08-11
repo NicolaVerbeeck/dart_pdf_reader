@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 
@@ -18,7 +19,7 @@ class FileStream extends RandomAccessStream {
   FileStream(this._file);
 
   @override
-  Future<int> readBuffer(int count, List<int> into) {
+  Future<int> readBuffer(int count, Uint8List into) {
     return _file.readInto(into, 0, count);
   }
 

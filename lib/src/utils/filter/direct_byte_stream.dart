@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 class ByteInputStream {
   final List<int> _bytes;
   var _position = 0;
@@ -35,11 +37,11 @@ class ByteOutputStream {
 
   ByteOutputStream(int capacity) : _bytes = <int>[];
 
-  List<int> getBytes() {
+  Uint8List getBytes() {
     if (_position == _bytes.length) {
-      return _bytes;
+      return Uint8List.fromList(_bytes);
     }
-    return _bytes.sublist(0, _position);
+    return Uint8List.fromList(_bytes.sublist(0, _position));
   }
 
   void write(int byte) {

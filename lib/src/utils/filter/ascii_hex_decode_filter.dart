@@ -4,8 +4,8 @@ class ASCIIHexDecodeFilter extends StreamFilter {
   const ASCIIHexDecodeFilter._() : super._();
 
   @override
-  List<int> decode(
-    List<int> bytes,
+  Uint8List decode(
+    Uint8List bytes,
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {

@@ -1,10 +1,11 @@
 import 'dart:math';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 
 /// Implementation of [RandomAccessStream] which reads from a list of bytes
 class ByteStream extends RandomAccessStream {
-  final List<int> _bytes;
+  final Uint8List _bytes;
   var _position = 0;
   final int _length;
 
@@ -24,13 +25,21 @@ class ByteStream extends RandomAccessStream {
   }
 
   @override
-  Future<int> readBuffer(int count, List<int> into) {
+  Future<int> readBuffer(int count, Uint8List into) {
     var i = 0;
-    final end = min(count, _bytes.length - _position);
-    for (; i < end; ++i) {
+    final actualCount = min(count, _bytes.length - _position);
+    for (; i < actualCount; ++i) {
       into[i] = _bytes[_position++];
     }
     return Future.value(i);
+  }
+
+  @override
+  Future<Uint8List> fastRead(int count) async {
+    final actualCount = min(count, _bytes.length - _position);
+    final result = Uint8List.view(_bytes.buffer, _position, actualCount);
+    _position += actualCount;
+    return result;
   }
 
   @override

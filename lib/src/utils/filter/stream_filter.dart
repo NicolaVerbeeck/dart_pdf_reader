@@ -1,16 +1,13 @@
 import 'dart:io';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/utils/filter/direct_byte_stream.dart';
 
 part 'ascii_85_decode_filter.dart';
-
 part 'ascii_hex_decode_filter.dart';
-
 part 'flate_decode_filter.dart';
-
 part 'lzw_decode_filter.dart';
-
 part 'run_length_decode_filter.dart';
 
 sealed class StreamFilter {
@@ -39,8 +36,8 @@ sealed class StreamFilter {
 
   const StreamFilter._();
 
-  List<int> decode(
-    List<int> bytes,
+  Uint8List decode(
+    Uint8List bytes,
     PDFObject? params,
     PDFDictionary streamDictionary,
   );
@@ -50,8 +47,8 @@ class _NoOpDecodeFilter extends StreamFilter {
   const _NoOpDecodeFilter._() : super._();
 
   @override
-  List<int> decode(
-    List<int> bytes,
+  Uint8List decode(
+    Uint8List bytes,
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {

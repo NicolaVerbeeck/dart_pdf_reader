@@ -1,3 +1,8 @@
+## 0.1.4
+
+- Use Uint8List instead of List<int> for bytes
+- Add fast path for copying bytes from ByteStream
+
 ## 0.1.3
 - Add support for pdf bookmarks (outlines)
 
