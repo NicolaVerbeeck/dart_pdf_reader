@@ -38,8 +38,14 @@ class ByteStream extends RandomAccessStream {
 
   @override
   Future<Uint8List> fastRead(int count) async {
+    if (count == _length) return _bytes;
+
     final actualCount = min(count, _bytes.length - _position);
-    final result = Uint8List.view(_bytes.buffer, _position, actualCount);
+    final result = Uint8List.view(
+      _bytes.buffer,
+      _bytes.offsetInBytes + _position,
+      actualCount,
+    );
     _position += actualCount;
     return result;
   }
