@@ -9,7 +9,7 @@ class ASCIIHexDecodeFilter extends StreamFilter {
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {
-    final out = ByteOutputStream(bytes.length);
+    final out = ByteOutputStream(bytes.length ~/ 2);
     var first = true;
     int n1 = 0;
     for (int k = 0; k < bytes.length; ++k) {

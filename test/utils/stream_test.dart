@@ -9,33 +9,35 @@ import 'package:test/test.dart';
 void main() {
   group('Readline tests', () {
     test('Test read line normal', () async {
-      final stream = ByteStream(utf8.encode('123\n456'));
+      final stream = ByteStream(Uint8List.fromList(utf8.encode('123\n456')));
       expect(await stream.readLine(), '123');
     });
     test('Test read carriage return', () async {
-      final stream = ByteStream(utf8.encode('123\r\n456'));
+      final stream = ByteStream(Uint8List.fromList(utf8.encode('123\r\n456')));
       expect(await stream.readLine(), '123');
     });
     test('Test read line no newline', () async {
-      final stream = ByteStream(utf8.encode('123'));
+      final stream = ByteStream(Uint8List.fromList(utf8.encode('123')));
       expect(await stream.readLine(), '123');
     });
     test('Test read line empty', () async {
-      final stream = ByteStream(utf8.encode(''));
+      final stream = ByteStream(Uint8List.fromList(utf8.encode('')));
       expect(stream.readLine(), throwsA(isA<EOFException>()));
     });
     test('Test read line, not empty but direct new line', () async {
-      final stream = ByteStream(utf8.encode('\n\n'));
+      final stream = ByteStream(Uint8List.fromList(utf8.encode('\n\n')));
       expect(await stream.readLine(), '');
     });
     test('Test read line multiple', () async {
-      final stream = ByteStream(utf8.encode('123\n456\n789'));
+      final stream =
+          ByteStream(Uint8List.fromList(utf8.encode('123\n456\n789')));
       expect(await stream.readLine(), '123');
       expect(await stream.readLine(), '456');
       expect(await stream.readLine(), '789');
     });
     test('Test read line multiple', () async {
-      final stream = ByteStream(utf8.encode('123\r\n456\r789'));
+      final stream =
+          ByteStream(Uint8List.fromList(utf8.encode('123\r\n456\r789')));
       expect(await stream.readLine(), '123');
       expect(await stream.readLine(), '456');
       expect(await stream.readLine(), '789');

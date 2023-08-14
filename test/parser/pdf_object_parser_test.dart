@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
 import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
@@ -14,7 +15,7 @@ part 'pdf_dictionary_parser.dart';
 part 'pdf_object_string_parser.dart';
 
 PDFObjectParser createParserFromString(String string) {
-  return createParser(ByteStream(utf8.encode(string)));
+  return createParser(ByteStream(Uint8List.fromList(utf8.encode(string))));
 }
 
 PDFObjectParser createParser(RandomAccessStream stream) {

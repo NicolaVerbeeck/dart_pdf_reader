@@ -9,10 +9,10 @@ class ASCII85DecodeFilter extends StreamFilter {
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {
-    final out = ByteOutputStream(bytes.length);
+    final out = ByteOutputStream((bytes.length ~/ 5) * 4);
 
     int state = 0;
-    final chn = List.filled(5, 0);
+    final chn = Uint8List(5);
     for (int k = 0; k < bytes.length; ++k) {
       int ch = bytes[k] & 0xff;
       if (ch == 0x7E) {

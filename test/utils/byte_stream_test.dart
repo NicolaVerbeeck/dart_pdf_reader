@@ -14,5 +14,14 @@ void main() {
     });
 
     createStreamTests(() => stream);
+
+    test('Test bytestream of fastRead result', () async {
+      final stream = ByteStream(Uint8List.fromList([1, 2, 3]));
+      await stream.seek(1);
+      final res = await stream.fastRead(2);
+      final newBuffer = ByteStream(res);
+      final endRes = await newBuffer.fastRead(1);
+      expect(endRes, [2]);
+    });
   });
 }

@@ -1,3 +1,8 @@
+## 0.1.5
+
+- Fixed bug when using fastRead
+- Added more uint list optimizations where possible
+
 ## 0.1.4
 
 - Use Uint8List instead of List<int> for bytes

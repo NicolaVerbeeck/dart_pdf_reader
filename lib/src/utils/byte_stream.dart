@@ -16,8 +16,8 @@ class ByteStream extends RandomAccessStream {
   Future<int> get position => Future.value(_position);
 
   /// Create a new [ByteStream] from a list of bytes
-  ByteStream(List<int> bytes)
-      : _bytes = bytes is Uint8List ? bytes : Uint8List.fromList(bytes),
+  ByteStream(Uint8List bytes)
+      : _bytes = bytes,
         _length = bytes.length;
 
   @override
@@ -38,8 +38,14 @@ class ByteStream extends RandomAccessStream {
 
   @override
   Future<Uint8List> fastRead(int count) async {
+    if (count == _length) return _bytes;
+
     final actualCount = min(count, _bytes.length - _position);
-    final result = Uint8List.view(_bytes.buffer, _position, actualCount);
+    final result = Uint8List.view(
+      _bytes.buffer,
+      _bytes.offsetInBytes + _position,
+      actualCount,
+    );
     _position += actualCount;
     return result;
   }
