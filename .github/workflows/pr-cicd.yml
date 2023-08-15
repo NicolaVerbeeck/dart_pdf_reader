@@ -38,7 +38,18 @@ jobs:
           sdk: stable
       - name: Install dependencies
         run: dart pub get
-      - run: dart test --no-color test --file-reporter "json:unit.test.json"
+      - name: Install coverage
+        run: dart pub global activate coverage
+      - uses: stelynx/dart-full-coverage@v1.1.1
+        with:
+          package: dart_pdf_reader
+      - run: dart test --no-color test --file-reporter "json:unit.test.json" --coverage="coverage"
+      - name: Convert coverage
+        run: $HOME/.pub-cache/bin/format_coverage --lcov --in=coverage --out=coverage.lcov --report-on=lib
+      - name: Upload coverage reports to Codecov
+        uses: codecov/codecov-action@v3
+        with:
+          token: ${{ secrets.CODECOV_TOKEN }}
       - name: Test Report
         if: always()
         uses: dorny/test-reporter@v1
