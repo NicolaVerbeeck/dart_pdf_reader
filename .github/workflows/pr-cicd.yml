@@ -1,6 +1,15 @@
 on:
   pull_request:
     types: [ opened, reopened, synchronize, ready_for_review ]
+  push:
+    branches:
+      - 'main'
+  workflow_dispatch:
+    inputs:
+      branch:
+        description: 'Branch to run tests on'
+        required: true
+        default: 'main'
 
 name: PR CI/CD
 
