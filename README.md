@@ -1,3 +1,5 @@
+[![Version](https://img.shields.io/pub/v/dart_pdf_reader.svg)](https://pub.dev/packages/dart_pdf_reader) [![codecov](https://codecov.io/gh/NicolaVerbeeck/dart_pdf_reader/graph/badge.svg?token=20CAT9JC3Y)](https://codecov.io/gh/NicolaVerbeeck/dart_pdf_reader)
+
 ## Features
 
 'Simple' PDF reader package. Does not do a lot of interpretation of the data
