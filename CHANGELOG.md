@@ -1,3 +1,8 @@
+## 0.1.6
+
+- Fixed bug in `ByteOutputStream` where writeAll would not update position
+- Added tests for `ByteOutputStream` and `ByteInputStream`
+
 ## 0.1.5
 
 - Fixed bug when using fastRead
