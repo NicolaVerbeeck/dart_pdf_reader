@@ -59,5 +59,6 @@ class ByteOutputStream {
         ..setAll(0, _bytes);
     }
     _bytes.setAll(_position, current);
+    _position += current.length;
   }
 }
