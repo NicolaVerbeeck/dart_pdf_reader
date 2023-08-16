@@ -1,8 +1,9 @@
+import 'dart:typed_data';
+
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
 
-class ReaderHelper {
-  ReaderHelper._();
+abstract class ReaderHelper {
 
   /// Try to read the first non-empty line from the buffer, stripping comments
   /// and skipping empty lines. Returns null if end of stream was reached.
@@ -28,9 +29,9 @@ class ReaderHelper {
   }
 
   /// Parses the hex string (without surrounding <>) into a list of bytes.
-  static List<int> fromHex(String string) {
+  static Uint8List fromHex(String string) {
     final len = string.length;
-    final out = List<int>.filled(len ~/ 2, 0);
+    final out = Uint8List(len ~/ 2);
 
     for (int i = 0; i < len; i += 2) {
       int h = _hexToBin(string.codeUnitAt(i));

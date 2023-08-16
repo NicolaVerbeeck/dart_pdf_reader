@@ -72,6 +72,9 @@ void main() {
               155
             ]);
       });
+      test('Test illegal hex byte', () {
+        expect(() => ReaderHelper.fromHex('1{'), throwsArgumentError);
+      });
     });
     group('Remove comments', () {
       test('Remove comments end of line', () {
@@ -192,6 +195,30 @@ void main() {
         final tokenStream = TokenStream(stream);
         expect(ReaderHelper.skipUntilFirstNonWhitespace(tokenStream),
             throwsA(isA<EOFException>()));
+      });
+    });
+    group('Test read number', () {
+      test('Reads a number', () async {
+        final stream = ByteStream(Uint8List.fromList(utf8.encode('123')));
+        final tokenStream = TokenStream(stream);
+        expect(await ReaderHelper.readNumber(tokenStream), 123);
+      });
+      test('Reads an invalid number', () async {
+        final stream = ByteStream(Uint8List.fromList(utf8.encode('1a3')));
+        final tokenStream = TokenStream(stream);
+        expect(
+            () => ReaderHelper.readNumber(tokenStream), throwsFormatException);
+      });
+      test('Reads empty number', () async {
+        final stream = ByteStream(Uint8List.fromList(utf8.encode('<')));
+        final tokenStream = TokenStream(stream);
+        expect(() => ReaderHelper.readNumber(tokenStream),
+            throwsA(isA<ParseException>()));
+      });
+      test('Reads a number with other tokens', () async {
+        final stream = ByteStream(Uint8List.fromList(utf8.encode('123<')));
+        final tokenStream = TokenStream(stream);
+        expect(await ReaderHelper.readNumber(tokenStream), 123);
       });
     });
   });
