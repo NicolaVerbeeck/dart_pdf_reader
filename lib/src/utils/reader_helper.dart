@@ -4,7 +4,6 @@ import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
 
 abstract class ReaderHelper {
-
   /// Try to read the first non-empty line from the buffer, stripping comments
   /// and skipping empty lines. Returns null if end of stream was reached.
   static Future<String?> readLineSkipEmpty(RandomAccessStream buffer) async {
