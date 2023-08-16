@@ -54,7 +54,7 @@ jobs:
           package: dart_pdf_reader
       - run: dart test --no-color test --file-reporter "json:unit.test.json" --coverage="coverage"
       - name: Convert coverage
-        run: $HOME/.pub-cache/bin/format_coverage --lcov --in=coverage --out=coverage.lcov --report-on=lib
+        run: $HOME/.pub-cache/bin/format_coverage --lcov --in=coverage --out=coverage.lcov --report-on=lib --check-ignore
       - name: Upload coverage reports to Codecov
         uses: codecov/codecov-action@v3
         with:
