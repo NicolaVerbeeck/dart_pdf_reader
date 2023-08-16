@@ -362,6 +362,24 @@ void main() {
         expect(utf8.decode(await stream.read(mockResolver)),
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac malesuada tellus. Quisque a arcu semper, tristique nibh eu, convallis lacus. Donec neque justo, condimentum sed molestie ac, mollis eu nibh. Vivamus pellentesque condimentum fringilla. Nullam euismod ac risus a semper. Etiam hendrerit scelerisque sapien tristique varius.');
       });
+      test('Test read with bad filter', () async {
+        final dict = const PDFDictionary({});
+        final bytes = File('test/resources/ASCIIHex.bin').readAsBytesSync();
+        final stream = PDFStreamObject(
+          dictionary: dict,
+          length: bytes.length,
+          offset: 0,
+          isBinary: false,
+          dataSource: ByteStream(bytes),
+        );
+        expect(stream.dictionary, const PDFDictionary({}));
+
+        final mockResolver = MockObjectResolver();
+        when(() => mockResolver.resolve(any()))
+            .thenAnswer((_) async => const PDFNumber(1));
+
+        expect(() => stream.read(mockResolver), throwsA(isA<ParseException>()));
+      });
       test('Test read with array filter', () async {
         final dict = const PDFDictionary({});
         final bytes = File('test/resources/ASCIIHex.bin').readAsBytesSync();
