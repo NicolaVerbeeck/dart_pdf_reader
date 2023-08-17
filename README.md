@@ -10,3 +10,14 @@ that is being read, but it does provide a way to read the data from a PDF file
 1) Create `RandomAccessStream` from either bytes `ByteStream` or file `FileStream`
 2) Create `PDFParser` using the stream from step 1
 3) Read the PDF file using the `PDFParser` from step 2 `await parser.parse()`
+
+## Example
+```dart
+final stream = ByteStream(File(inputFile).readAsBytesSync());
+final doc = await PDFParser(stream).parse();
+
+final catalog = await doc.catalog;
+final pages = await catalog.getPages();
+final outlines = await catalog.getOutlines();
+final firstPage = pages.getPageAtIndex(0);
+```
