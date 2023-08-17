@@ -277,3 +277,5 @@ support/
 
 # VS Code
 .vscode/
+
+test/coverage_helper_test.dart

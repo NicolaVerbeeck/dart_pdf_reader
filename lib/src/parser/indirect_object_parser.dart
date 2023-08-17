@@ -57,7 +57,8 @@ class IndirectObjectParser {
         (await readObjectAt(compressedContainer)).object as PDFStreamObject;
     assert(stream.dictionary[const PDFName('Type')] == const PDFName('ObjStm'));
     if (stream.dictionary.has(const PDFName('Extends'))) {
-      throw ParseException('Extends on compressed stream not supported yet');
+      throw const ParseException(
+          'Extends on compressed stream not supported yet');
     }
 
     final streamData = await stream.read(resolver);

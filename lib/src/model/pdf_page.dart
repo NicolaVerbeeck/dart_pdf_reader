@@ -68,12 +68,18 @@ abstract class PDFPageNode {
   /// The dictionary of this page
   PDFDictionary get dictionary => _dictionary;
 
-  /// Reads this page's content stream if present
+  /// Deprecated, use [contentStreams] instead.
+  ///
+  /// Reads this page's content stream if present. If multiple content streams
+  /// are present, only the first one is returned.
   @Deprecated(
       'Always returns the first content stream. Use contentStreams instead')
   Future<PDFStreamObject?> get contentStream =>
       contentStreams.then((value) => value?.first);
 
+  /// Reads this page's content streams if present
+  /// If this page contains a single content stream, it is returned as a list
+  /// with a single element.
   Future<List<PDFStreamObject>?> get contentStreams async {
     final resolved =
         await _objectResolver.resolve(_dictionary[const PDFName('Contents')]);
@@ -89,7 +95,8 @@ abstract class PDFPageNode {
       }
       return list;
     } else {
-      throw ParseException('Invalid PDF, contents neither stream nor array');
+      throw const ParseException(
+          'Invalid PDF, contents neither stream nor array');
     }
   }
 

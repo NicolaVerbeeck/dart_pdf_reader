@@ -134,6 +134,27 @@ void main() {
       expect(await sut.contentStreams, null);
       verifyNever(() => parent.getOrInherited(const PDFName('Contents')));
     });
+    test('Test supports single content stream', () async {
+      final parent = _MockPDFPageNode();
+      final resolver = _MockObjectResolver();
+      final stream1 = _MockStream();
+
+      when(() => resolver.resolve(const PDFNumber(1337)))
+          .thenAnswer((_) async => stream1);
+
+      final sut = PDFPageObjectNode(
+        _MockPDFDocument(),
+        parent,
+        resolver,
+        PDFDictionary({
+          const PDFName('Contents'): const PDFNumber(1337),
+        }),
+      );
+
+      expect(await sut.contentStreams, [stream1]);
+      // ignore: deprecated_member_use_from_same_package
+      expect(await sut.contentStream, stream1);
+    });
     test('Test supports multiple content streams', () async {
       final parent = _MockPDFPageNode();
       final resolver = _MockObjectResolver();
@@ -160,7 +181,37 @@ void main() {
         }),
       );
 
-      expect(await sut.contentStreams, isNotEmpty);
+      expect(await sut.contentStreams, [stream1, stream2]);
+    });
+    test('Test contentStream returns first stream when multiple are defined',
+        () async {
+      final parent = _MockPDFPageNode();
+      final resolver = _MockObjectResolver();
+      final stream1 = _MockStream();
+      final stream2 = _MockStream();
+
+      when(() => resolver.resolve<PDFStreamObject>(
+              const PDFObjectReference(objectId: 11, generationNumber: 0)))
+          .thenAnswer((_) async => stream2);
+      when(() => resolver.resolve<PDFStreamObject>(stream1))
+          .thenAnswer((_) async => stream1);
+      when(() => resolver.resolve(const PDFNumber(1337))).thenAnswer(
+          (_) async => PDFArray([
+                stream1,
+                const PDFObjectReference(objectId: 11, generationNumber: 0)
+              ]));
+
+      final sut = PDFPageObjectNode(
+        _MockPDFDocument(),
+        parent,
+        resolver,
+        PDFDictionary({
+          const PDFName('Contents'): const PDFNumber(1337),
+        }),
+      );
+
+      // ignore: deprecated_member_use_from_same_package
+      expect(await sut.contentStream, stream1);
     });
     test('Test get resources tries to resolve', () async {
       final parent = _MockPDFPageNode();

@@ -1,6 +1,7 @@
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:meta/meta.dart';
 
+/// Action types for pdf outlines
 enum PDFOutlineActionType {
   goto,
   gotor,
@@ -28,7 +29,7 @@ class PDFOutlineItem {
   /// The title of the outline
   final String title;
 
-  // The action of the outline
+  /// The action of the outline
   final PDFOutlineAction action;
 
   /// Creates a new [PDFOutlineItem] object.
@@ -37,10 +38,12 @@ class PDFOutlineItem {
     required this.action,
   });
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFOutlineItem{title: $title, action: $action}';
   }
+// coverage:ignore-end
 }
 
 /// Type of a PDF outline action creator function
@@ -69,6 +72,12 @@ abstract class PDFOutlineAction {
   /// The type of the action
   PDFOutlineActionType get type;
 
+  /// Creates a new outline action from the given [dictionary]. If any custom
+  /// creator for the type is registered, it will be first queried to produce
+  /// the action. If it returns `null`, the default creator will be used.
+  ///
+  /// If the type is not known or no creator could create a [PDFOutlineAction]
+  /// for it, an [ActionTypeNotSupported] exception is thrown.
   factory PDFOutlineAction.fromDictionary(
     PDFDictionary dictionary,
   ) {
@@ -86,24 +95,27 @@ abstract class PDFOutlineAction {
     switch (type) {
       case PDFOutlineActionType.goto:
         return PDFOutlineGoToAction(
-          destination: (dictionary[const PDFName('D')] as PDFArray).first
-              as PDFObjectReference,
+          destination: dictionary[const PDFName('D')]!,
         );
       default:
         throw ActionTypeNotSupported('Unhandled outline action type: $type');
     }
   }
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFOutlineAction{type: $type}';
   }
+// coverage:ignore-end
 }
 
 /// A PDF outline GoTo Action
 @immutable
 class PDFOutlineGoToAction extends PDFOutlineAction {
-  final PDFObjectReference destination;
+  /// The destination of the action. Can be a [PDFStringLike], [PDFArray]
+  /// or a [PDFName]. See PDF 1.7 specification section 8.2.1 for more
+  final PDFObject destination;
 
   /// Creates a new [PDFOutlineGoToAction] object.
   const PDFOutlineGoToAction({
@@ -113,8 +125,15 @@ class PDFOutlineGoToAction extends PDFOutlineAction {
   @override
   PDFOutlineActionType get type => PDFOutlineActionType.goto;
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFOutlineGoToAction{title: $type, destination: $destination}';
   }
+// coverage:ignore-end
+}
+
+@visibleForTesting
+void clearOutlineCreators() {
+  PDFOutlineAction._outlineCreators.clear();
 }

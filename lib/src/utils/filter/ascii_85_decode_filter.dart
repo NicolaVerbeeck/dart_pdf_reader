@@ -29,7 +29,7 @@ class ASCII85DecodeFilter extends StreamFilter {
         continue;
       }
       if (ch < 0x21 || ch > 0x75) {
-        throw ParseException('Illegal character in ASCII85Decode stream');
+        throw const ParseException('Illegal character in ASCII85Decode stream');
       }
       chn[state] = ch - 0x21;
       ++state;

@@ -42,14 +42,14 @@ class PDFDocumentCatalog {
   }
 
   /// Reads the document's version into a version string
-  Future<String?> getVersion() async {
+  Future<String?> getVersion() {
     return _resolver
         .resolve<PDFStringLike>(_dictionary[const PDFName('Version')])
         .then((value) => value?.asString());
   }
 
   /// Reads the document's language into a language string
-  Future<String?> getLanguage() async {
+  Future<String?> getLanguage() {
     return _resolver
         .resolve<PDFStringLike>(_dictionary[const PDFName('Lang')])
         .then((value) => value?.asString());
@@ -98,47 +98,42 @@ class PDFDocumentCatalog {
   }
 
   Future<List<PDFOutlineItem>> _readOutlines(PDFDictionary dictionary) async {
-    final firstRef = dictionary[const PDFName('First')] as PDFObjectReference;
+    final firstRef = await _resolver
+        .resolve<PDFDictionary>(dictionary[const PDFName('First')]);
 
-    PDFObjectReference? currentOutlineRef = firstRef;
+    PDFDictionary? currentOutline = firstRef;
 
     final outlines = <PDFOutlineItem>[];
 
-    while (currentOutlineRef != null) {
-      final currentOutline = await _resolver.resolve(currentOutlineRef);
+    while (currentOutline != null) {
+      final title = currentOutline[const PDFName('Title')] as PDFLiteralString;
+      final nextRef = await _resolver
+          .resolve<PDFDictionary>(currentOutline[const PDFName('Next')]);
 
-      /// If we can't resolve the current outline, cancel
-      if (currentOutline == null) {
-        break;
-      }
-
-      final title = (currentOutline as PDFDictionary)[const PDFName('Title')]
-          as PDFLiteralString;
-      final nextRef =
-          currentOutline[const PDFName('Next')] as PDFObjectReference?;
-
-      /// set the next outline
-      currentOutlineRef = nextRef;
-      final actionRef =
-          currentOutline[const PDFName('A')] as PDFObjectReference?;
-      final destRef =
-          currentOutline[const PDFName('Dest')] as PDFObjectReference?;
-
+      final destRef = currentOutline[const PDFName('Dest')];
       if (destRef != null) {
         // TODO: Destination outline is not supported yet
         continue;
-      } else if (actionRef != null) {
-        final action = await _resolver.resolve(actionRef) as PDFDictionary;
+      }
+      final action = await _resolver
+          .resolve<PDFDictionary>(currentOutline[const PDFName('A')]);
+
+      if (action != null) {
         try {
-          outlines.add(PDFOutlineItem(
-            title: title.asString(),
-            action: PDFOutlineAction.fromDictionary(action),
-          ));
+          outlines.add(
+            PDFOutlineItem(
+              title: title.asString(),
+              action: PDFOutlineAction.fromDictionary(action),
+            ),
+          );
         } catch (e) {
           // TODO: This outline action is not supported yet
           continue;
         }
       }
+
+      /// set the next outline
+      currentOutline = nextRef;
     }
 
     return outlines;
