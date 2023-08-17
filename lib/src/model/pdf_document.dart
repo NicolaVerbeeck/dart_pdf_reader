@@ -10,8 +10,8 @@ class PDFDocument {
 
   /// Extracts the [PDFDocumentCatalog] from the document
   Future<PDFDocumentCatalog> get catalog async {
-    final dict = await _objectResolver
-        .resolve<PDFDictionary>(mainTrailer[const PDFName('Root')]);
+    final dict =
+        await resolve<PDFDictionary>(mainTrailer[const PDFName('Root')]);
     return PDFDocumentCatalog(this, dict!, _objectResolver);
   }
 
@@ -26,8 +26,4 @@ class PDFDocument {
   Future<T?> resolve<T extends PDFObject>(PDFObject? toResolve) {
     return _objectResolver.resolve(toResolve);
   }
-}
-
-extension DocExt on PDFDocument {
-  ObjectResolver get objectResolver => _objectResolver;
 }

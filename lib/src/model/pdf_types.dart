@@ -86,10 +86,10 @@ class PDFNumber extends PDFObject {
 @immutable
 class PDFLiteralString extends PDFStringLike {
   /// The value of the string.
-  final List<int> _value;
+  final Uint8List _value;
 
   /// The code points of this string. No specific encoding is assumed
-  List<int> get codePoints => _value;
+  Uint8List get codePoints => _value;
 
   /// Creates a new [PDFLiteralString] object.
   const PDFLiteralString(this._value);

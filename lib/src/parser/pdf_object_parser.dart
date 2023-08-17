@@ -1,6 +1,7 @@
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
+import 'package:dart_pdf_reader/src/utils/list_extensions.dart';
 import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
 
 class PDFObjectParser {
@@ -335,7 +336,7 @@ class PDFObjectParser {
         builder.add(token);
       }
     }
-    return PDFLiteralString(builder);
+    return PDFLiteralString(builder.asUint8List());
   }
 
   Future<CharCode> _parseOctal(CharCode firstDigit) async {

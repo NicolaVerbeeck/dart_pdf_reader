@@ -23,11 +23,11 @@ class PDFPages {
         throw Exception('Page not found');
       }
     }
-    final count = node._length;
+    final count = node.length;
     if (pageNum <= encountered + count) {
       for (final PDFPageNode kid in node._children) {
         if (kid is PDFPageTreeNode) {
-          final kidCount = kid._length;
+          final kidCount = kid.length;
           if (pageNum <= encountered + kidCount) {
             return _get(pageNum, kid, encountered);
           } else {
@@ -47,10 +47,12 @@ class PDFPages {
     }
   }
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFPages{root: $_root}';
   }
+  // coverage:ignore-end
 }
 
 abstract class PDFPageNode {
@@ -81,10 +83,12 @@ abstract class PDFPageNode {
     this._dictionary,
   );
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFPageNode{_dictionary: $_dictionary}';
   }
+  // coverage:ignore-end
 
   /// Gets the value of the given key from this page's dictionary. If the key
   /// is not present, the parent's dictionary is searched and so on and so on
@@ -101,7 +105,7 @@ abstract class PDFPageNode {
 /// An intermediate node in the pages tree
 class PDFPageTreeNode extends PDFPageNode {
   final List<PDFPageNode> _children;
-  final int _length;
+  final int length;
 
   PDFPageTreeNode(
     super.document,
@@ -109,15 +113,17 @@ class PDFPageTreeNode extends PDFPageNode {
     super.objectResolver,
     super.dictionary,
     this._children,
-    this._length,
+    this.length,
   );
 
   PDFPageNode operator [](int index) => _children[index];
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFPageTreeNode{children: ${_children.length}::${super.toString()}';
   }
+  // coverage:ignore-end
 }
 
 /// A single page of the document
@@ -135,10 +141,12 @@ class PDFPageObjectNode extends PDFPageNode {
     super.dictionary,
   );
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'PDFPageObjectNode{}::${super.toString()}';
   }
+  // coverage:ignore-end
 
   Rectangle<double> _toRect(PDFArray array) {
     if (array.length < 4) {
