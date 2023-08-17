@@ -1,5 +1,6 @@
 import 'dart:math';
 
+import 'package:dart_pdf_reader/src/error/exceptions.dart';
 import 'package:dart_pdf_reader/src/model/pdf_document.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
@@ -52,7 +53,7 @@ class PDFPages {
   String toString() {
     return 'PDFPages{root: $_root}';
   }
-  // coverage:ignore-end
+// coverage:ignore-end
 }
 
 abstract class PDFPageNode {
@@ -68,8 +69,29 @@ abstract class PDFPageNode {
   PDFDictionary get dictionary => _dictionary;
 
   /// Reads this page's content stream if present
+  @Deprecated(
+      'Always returns the first content stream. Use contentStreams instead')
   Future<PDFStreamObject?> get contentStream =>
-      _objectResolver.resolve(_dictionary[const PDFName('Contents')]);
+      contentStreams.then((value) => value?.first);
+
+  Future<List<PDFStreamObject>?> get contentStreams async {
+    final resolved =
+        await _objectResolver.resolve(_dictionary[const PDFName('Contents')]);
+    if (resolved == null) {
+      return null;
+    } else if (resolved is PDFStreamObject) {
+      return [resolved];
+    } else if (resolved is PDFArray) {
+      final list = <PDFStreamObject>[];
+      for (final e in resolved) {
+        final stream = (await _objectResolver.resolve<PDFStreamObject>(e))!;
+        list.add(stream);
+      }
+      return list;
+    } else {
+      throw ParseException('Invalid PDF, contents neither stream nor array');
+    }
+  }
 
   /// Reads this page's resources if present
   Future<PDFDictionary?> get resources =>
@@ -88,6 +110,7 @@ abstract class PDFPageNode {
   String toString() {
     return 'PDFPageNode{_dictionary: $_dictionary}';
   }
+
   // coverage:ignore-end
 
   /// Gets the value of the given key from this page's dictionary. If the key
@@ -123,7 +146,7 @@ class PDFPageTreeNode extends PDFPageNode {
   String toString() {
     return 'PDFPageTreeNode{children: ${_children.length}::${super.toString()}';
   }
-  // coverage:ignore-end
+// coverage:ignore-end
 }
 
 /// A single page of the document
@@ -146,6 +169,7 @@ class PDFPageObjectNode extends PDFPageNode {
   String toString() {
     return 'PDFPageObjectNode{}::${super.toString()}';
   }
+
   // coverage:ignore-end
 
   Rectangle<double> _toRect(PDFArray array) {

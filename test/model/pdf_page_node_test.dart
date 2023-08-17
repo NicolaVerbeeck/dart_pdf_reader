@@ -13,6 +13,8 @@ class _MockObjectResolver extends Mock implements ObjectResolver {}
 
 class _MockPDFPageNode extends Mock implements PDFPageNode {}
 
+class _MockStream extends Mock implements PDFStreamObject {}
+
 void main() {
   group('PDFPageNode tests', () {
     test('Test get or inherited gets self first', () {
@@ -99,7 +101,7 @@ void main() {
       final parent = _MockPDFPageNode();
       final resolver = _MockObjectResolver();
 
-      when(() => resolver.resolve<PDFStreamObject>(const PDFNumber(1337)))
+      when(() => resolver.resolve(const PDFNumber(1337)))
           .thenAnswer((invocation) async => null);
 
       final sut = PDFPageObjectNode(
@@ -111,9 +113,54 @@ void main() {
         }),
       );
 
-      expect(await sut.contentStream, null);
-      verify(() => resolver.resolve<PDFStreamObject>(const PDFNumber(1337)))
-          .called(1);
+      expect(await sut.contentStreams, null);
+      verify(() => resolver.resolve(const PDFNumber(1337))).called(1);
+    });
+    test('Test get contents does not resolve to parent', () async {
+      final parent = _MockPDFPageNode();
+      final resolver = _MockObjectResolver();
+
+      when(() => parent.getOrInherited(const PDFName('Contents')))
+          .thenAnswer((_) => const PDFNull());
+      when(() => resolver.resolve(null)).thenAnswer((_) async => null);
+
+      final sut = PDFPageObjectNode(
+        _MockPDFDocument(),
+        parent,
+        resolver,
+        const PDFDictionary({}),
+      );
+
+      expect(await sut.contentStreams, null);
+      verifyNever(() => parent.getOrInherited(const PDFName('Contents')));
+    });
+    test('Test supports multiple content streams', () async {
+      final parent = _MockPDFPageNode();
+      final resolver = _MockObjectResolver();
+      final stream1 = _MockStream();
+      final stream2 = _MockStream();
+
+      when(() => resolver.resolve<PDFStreamObject>(
+              const PDFObjectReference(objectId: 11, generationNumber: 0)))
+          .thenAnswer((_) async => stream2);
+      when(() => resolver.resolve<PDFStreamObject>(stream1))
+          .thenAnswer((_) async => stream1);
+      when(() => resolver.resolve(const PDFNumber(1337))).thenAnswer(
+          (_) async => PDFArray([
+                stream1,
+                const PDFObjectReference(objectId: 11, generationNumber: 0)
+              ]));
+
+      final sut = PDFPageObjectNode(
+        _MockPDFDocument(),
+        parent,
+        resolver,
+        PDFDictionary({
+          const PDFName('Contents'): const PDFNumber(1337),
+        }),
+      );
+
+      expect(await sut.contentStreams, isNotEmpty);
     });
     test('Test get resources tries to resolve', () async {
       final parent = _MockPDFPageNode();
