@@ -58,6 +58,16 @@ void stringParserTests() {
         expect(createParserFromString('<48656c6c6f').parse(),
             throwsA(isA<ParseException>()));
       });
+      test('Test after parse closing bracket is consumed', () async {
+        final stream =
+            ByteStream(Uint8List.fromList(utf8.encode('<48656c6c6f>a')));
+        final parser = createParser(stream);
+        final parsed = await parser.parse();
+        expect(parsed, isA<PDFHexString>());
+        parsed as PDFHexString;
+        expect(parsed.asString(), 'Hello');
+        expect(await stream.peekByte(), 0x61);
+      });
     });
   });
 }
