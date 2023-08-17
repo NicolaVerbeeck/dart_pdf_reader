@@ -70,7 +70,7 @@ abstract class ReaderHelper {
     while (true) {
       final ch = await buffer.readByte();
       if (ch == -1) {
-        throw EOFException();
+        throw const EOFException();
       }
       if (ch == i) {
         await buffer.seek(await buffer.position - 1); // Go back a single one
@@ -105,7 +105,7 @@ abstract class ReaderHelper {
       return skipUntilFirstNonWhitespace(tokenStream);
     }
     if (await tokenStream.nextTokenType() == TokenType.eof) {
-      throw EOFException();
+      throw const EOFException();
     }
   }
 
@@ -132,7 +132,7 @@ abstract class ReaderHelper {
       numberString.writeCharCode(await tokenStream.consumeToken());
     }
     if (numberString.isEmpty) {
-      throw ParseException('Expected number, not nothing');
+      throw const ParseException('Expected number, not nothing');
     }
     return int.parse(numberString.toString());
   }

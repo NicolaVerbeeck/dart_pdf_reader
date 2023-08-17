@@ -1,3 +1,11 @@
+## 0.2.0
+
+- Bugfix: Hex strings now consume their ending bracket
+- Bugfix: Multiple content streams in a page are now supported
+- Update: Support direct dictionaries in outlines
+- Breaking: `destination` in `PDFOutlineGoToAction` has been updated to a generic object as per spec
+- Deprecation: `page.contentStream` has been deprecated in favor of `page.contentStreams`
+
 ## 0.1.6
 
 - Fixed bug in `ByteOutputStream` where writeAll would not update position

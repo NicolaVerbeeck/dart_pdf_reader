@@ -45,7 +45,7 @@ abstract class RandomAccessStream {
       var c = await readByte();
       if (c == -1) {
         if (line.length == 0) {
-          throw EOFException();
+          throw const EOFException();
         } else {
           return line.toString();
         }

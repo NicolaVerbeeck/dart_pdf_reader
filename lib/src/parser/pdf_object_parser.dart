@@ -76,7 +76,8 @@ class PDFObjectParser {
     await _tokenStream.consumeToken(); // Consume l
 
     if (await _tokenStream.nextTokenType() == TokenType.normal) {
-      throw ParseException('Null was not followed by a delim or whitespace');
+      throw const ParseException(
+          'Null was not followed by a delim or whitespace');
     }
     return const PDFNull();
   }
@@ -169,7 +170,8 @@ class PDFObjectParser {
         await ReaderHelper.readLine(_buffer);
         continue;
       } else if (type == TokenType.eof) {
-        throw ParseException('Unexpected end of file while reading array');
+        throw const ParseException(
+            'Unexpected end of file while reading array');
       }
       final token = await _tokenStream.nextToken();
       if (token == 0x5D) {
@@ -209,7 +211,8 @@ class PDFObjectParser {
         await ReaderHelper.readLine(_buffer);
         continue;
       } else if (type == TokenType.eof) {
-        throw ParseException('Unexpected end of file while reading hex string');
+        throw const ParseException(
+            'Unexpected end of file while reading hex string');
       }
       hexString.writeCharCode(await _tokenStream.consumeToken());
     }
@@ -237,14 +240,16 @@ class PDFObjectParser {
     while ((token = await _nextNonWhiteSpace()) != 0x3E) {
       // /
       if (token != 0x2F) {
-        throw ParseException('Dictionary key must start with /');
+        throw const ParseException('Dictionary key must start with /');
       }
       final name = await _parseName();
 
       entries[name] = await parse();
     }
     token = await _tokenStream.consumeToken();
-    if (token != 0x3E) throw ParseException('Dictionary must end with >>');
+    if (token != 0x3E) {
+      throw const ParseException('Dictionary must end with >>');
+    }
     return PDFDictionary(entries);
   }
 
@@ -261,7 +266,7 @@ class PDFObjectParser {
       object = object.object;
     }
     if (object is! PDFNumber) {
-      throw ParseException('Length is not a number');
+      throw const ParseException('Length is not a number');
     }
     final length = object.toInt();
     final start = await _buffer.position;
@@ -285,7 +290,8 @@ class PDFObjectParser {
     while (true) {
       final token = await _tokenStream.consumeToken();
       if (token == -1) {
-        throw ParseException('Unexpected end of file while parsing string');
+        throw const ParseException(
+            'Unexpected end of file while parsing string');
       }
       if (escaping) {
         if (token == 0x6E) {

@@ -111,7 +111,7 @@ class FlateDecodeFilter extends StreamFilter {
           }
           break;
         default:
-          throw ParseException('Unknown png filter');
+          throw const ParseException('Unknown png filter');
       }
       fout.writeAll(current);
       final tmp = prior;

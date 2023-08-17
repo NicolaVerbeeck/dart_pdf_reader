@@ -37,7 +37,7 @@ class XRefReader {
       await stream.seek(offset);
       final line = await ReaderHelper.readLineSkipEmpty(stream);
       if (line == null || !RegExp(r'\d+ \d+ obj').hasMatch(line)) {
-        throw ParseException('Expected \'trailer\'');
+        throw const ParseException('Expected \'trailer\'');
       }
       await stream.seek(offset);
       return _parseXRefAndTrailerFromStreamAtObject();
@@ -79,9 +79,10 @@ class XRefReader {
         PDFArray([const PDFNumber(0), PDFNumber(size)]);
 
     final w = dictionary.entries[const PDFName('W')] as PDFArray?;
-    if (w == null) throw ParseException('Xref stream requires W entry');
+    if (w == null) throw const ParseException('Xref stream requires W entry');
     if (w.length != 3) {
-      throw ParseException('Xref stream requires W entry with 3 elements');
+      throw const ParseException(
+          'Xref stream requires W entry with 3 elements');
     }
     final firstW = (w[0] as PDFNumber).toInt();
     final secondW = (w[1] as PDFNumber).toInt();
@@ -175,7 +176,7 @@ class XRefReader {
         as PDFStreamObject;
     if (xrefStream.dictionary.entries[const PDFName('Type')] !=
         const PDFName('XRef')) {
-      throw ParseException('Compressed xref stream is of wrong type');
+      throw const ParseException('Compressed xref stream is of wrong type');
     }
     return _parseXRefAndTrailerFromCompressedStream(
         xrefStream.dictionary, xrefStream);

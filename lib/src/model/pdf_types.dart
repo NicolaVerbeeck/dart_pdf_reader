@@ -442,7 +442,8 @@ class PDFStreamObject extends PDFObject {
     } else if (filter is PDFName) {
       filters.add(StreamFilter(filter));
     } else {
-      throw ParseException('Filter needs to be a name or an array of names');
+      throw const ParseException(
+          'Filter needs to be a name or an array of names');
     }
     final decodeParams = await resolver
         .resolve<PDFObject>(dictionary[const PDFName('DecodeParms')]);

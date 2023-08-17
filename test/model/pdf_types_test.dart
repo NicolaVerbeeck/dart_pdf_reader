@@ -33,6 +33,10 @@ void main() {
         final pdfNumber = const PDFNumber(12.002);
         expect(pdfNumber.toString(), equals('12.002'));
       });
+      test('Test toString truncates to int because of trailing zero', () {
+        final pdfNumber = const PDFNumber(12.000002);
+        expect(pdfNumber.toString(), equals('12'));
+      });
       test('Test toInt with int', () {
         final pdfNumber = const PDFNumber(12);
         expect(pdfNumber.toInt(), equals(12));

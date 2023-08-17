@@ -22,7 +22,8 @@ class ASCIIHexDecodeFilter extends StreamFilter {
       }
       int n = _getHex(ch);
       if (n == -1) {
-        throw ParseException('Illegal character in ASCIIHexDecode stream');
+        throw const ParseException(
+            'Illegal character in ASCIIHexDecode stream');
       }
       if (first) {
         n1 = n;

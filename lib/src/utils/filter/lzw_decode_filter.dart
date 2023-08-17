@@ -40,10 +40,10 @@ class _LZWDecoder {
 
   void decode() {
     if (_data.length < 2) {
-      throw ParseException('Bad LZW encoded length');
+      throw const ParseException('Bad LZW encoded length');
     }
     if (_data[0] == 0x00 && _data[1] == 0x01) {
-      throw ParseException('LZW flavour not supported');
+      throw const ParseException('LZW flavour not supported');
     }
     _initializeStringTable();
     _nextBits = 0;
