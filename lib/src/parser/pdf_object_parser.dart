@@ -216,6 +216,7 @@ class PDFObjectParser {
     if ((hexString.length % 2) == 1) {
       hexString.writeCharCode(0x30);
     }
+    await _tokenStream.consumeToken(); // Consume >
 
     return PDFHexString(ReaderHelper.fromHex(hexString.toString()));
   }
