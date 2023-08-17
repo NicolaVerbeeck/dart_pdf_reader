@@ -13,7 +13,7 @@ class ByteInputStream {
     return _bytes[_position++];
   }
 
-  void readFully(List<int> current, int offset, int length) {
+  void readFully(Uint8List current, int offset, int length) {
     if (_position + length > _bytes.length) {
       throw Exception('End of stream');
     }

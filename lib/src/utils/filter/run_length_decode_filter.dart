@@ -18,7 +18,8 @@ class RunLengthDecodeFilter extends StreamFilter {
       }
       if ((n & 0x80) == 0) {
         final bytesToCopy = n + 1;
-        out.writeAll(Uint8List.view(bytes.buffer, i + 1, bytesToCopy));
+        out.writeAll(Uint8List.view(
+            bytes.buffer, bytes.offsetInBytes + i + 1, bytesToCopy));
         i += n;
       } else {
         i++;

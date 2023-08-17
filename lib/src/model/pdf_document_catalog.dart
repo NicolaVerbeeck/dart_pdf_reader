@@ -19,8 +19,8 @@ class PDFDocumentCatalog {
 
   /// Reads the document's pages into a [PDFPages] object
   Future<PDFPages> getPages() async {
-    final pagesRoot =
-        (await _resolver.resolve(_dictionary[const PDFName('Pages')]))!;
+    final pagesRoot = (await _resolver
+        .resolve<PDFDictionary>(_dictionary[const PDFName('Pages')]))!;
     final pageRoot = await _readPageTree(pagesRoot, parent: null);
     return PDFPages(pageRoot);
   }
@@ -56,12 +56,11 @@ class PDFDocumentCatalog {
   }
 
   Future<PDFPageTreeNode> _readPageTree(
-    PDFObject pagesRoot, {
+    PDFDictionary pagesRoot, {
     required PDFPageNode? parent,
   }) async {
-    pagesRoot as PDFDictionary;
     final kidsArray =
-        await _resolver.resolve(pagesRoot[const PDFName('Kids')]) as PDFArray;
+        (await _resolver.resolve<PDFArray>(pagesRoot[const PDFName('Kids')]))!;
 
     final children = <PDFPageNode>[];
     final treeNode = PDFPageTreeNode(
@@ -70,12 +69,12 @@ class PDFDocumentCatalog {
       _resolver,
       pagesRoot,
       children,
-      (await _resolver.resolve(pagesRoot[const PDFName('Count')]) as PDFNumber)
+      (await _resolver.resolve<PDFNumber>(pagesRoot[const PDFName('Count')]))!
           .toInt(),
     );
 
     for (final kid in kidsArray) {
-      final childObject = await _resolver.resolve(kid) as PDFDictionary;
+      final childObject = (await _resolver.resolve<PDFDictionary>(kid))!;
       final type = (childObject[const PDFName('Type')] as PDFName).value;
       switch (type) {
         case 'Pages':

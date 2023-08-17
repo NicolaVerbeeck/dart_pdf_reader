@@ -81,5 +81,46 @@ void main() {
         expect(dest[2], const PDFNumber(3));
       });
     });
+    group('Pages tests', () {
+      late ObjectResolver mockResolver;
+      setUp(() {
+        mockResolver = _MockObjectResolver();
+        when(() => mockResolver.resolve<PDFDictionary>(captureAny()))
+            .thenAnswer((invocation) async =>
+                invocation.positionalArguments[0] as PDFDictionary?);
+        when(() => mockResolver.resolve<PDFArray>(captureAny())).thenAnswer(
+            (invocation) async =>
+                invocation.positionalArguments[0] as PDFArray?);
+        when(() => mockResolver.resolve<PDFNumber>(captureAny())).thenAnswer(
+            (invocation) async =>
+                invocation.positionalArguments[0] as PDFNumber?);
+      });
+      test('Test read pages', () async {
+        final dict = PDFDictionary({
+          const PDFName('Pages'): PDFDictionary({
+            const PDFName('Count'): const PDFNumber(2),
+            const PDFName('Kids'): PDFArray([
+              PDFDictionary({
+                const PDFName('Type'): const PDFName('Pages'),
+                const PDFName('Count'): const PDFNumber(1),
+                const PDFName('Kids'): PDFArray([
+                  PDFDictionary({
+                    const PDFName('Type'): const PDFName('Page'),
+                  }),
+                ]),
+              }),
+              PDFDictionary({
+                const PDFName('Type'): const PDFName('Page'),
+              }),
+            ]),
+          }),
+        });
+
+        final mockDocument = _MockPDFDocument();
+        final catalog = PDFDocumentCatalog(mockDocument, dict, mockResolver);
+        final pages = await catalog.getPages();
+        expect(pages, isNotNull);
+      });
+    });
   });
 }
