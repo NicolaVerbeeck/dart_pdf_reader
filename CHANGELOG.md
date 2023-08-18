@@ -1,3 +1,8 @@
+## 0.2.4
+
+- Add direct support for accessing page's art, bleed, crop and trim boxes
+- Add direct support for accessing page's rotation flag
+
 ## 0.2.3
 
 - Support malformed strings when decoding utf8
