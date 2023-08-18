@@ -6,21 +6,21 @@ import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 
 /// The document catalog describing the document
 class PDFDocumentCatalog {
-  final PDFDictionary _dictionary;
-  final ObjectResolver _resolver;
-  final PDFDocument _document;
+  final PDFDictionary dictionary;
+  final ObjectResolver resolver;
+  final PDFDocument document;
 
   /// Create a new instance of [PDFDocumentCatalog]
   PDFDocumentCatalog(
-    this._document,
-    this._dictionary,
-    this._resolver,
+    this.document,
+    this.dictionary,
+    this.resolver,
   );
 
   /// Reads the document's pages into a [PDFPages] object
   Future<PDFPages> getPages() async {
-    final pagesRoot = (await _resolver
-        .resolve<PDFDictionary>(_dictionary[const PDFName('Pages')]))!;
+    final pagesRoot = (await resolver
+        .resolve<PDFDictionary>(dictionary[const PDFName('Pages')]))!;
     final pageRoot = await _readPageTree(pagesRoot, parent: null);
     return PDFPages(pageRoot);
   }
@@ -31,8 +31,8 @@ class PDFDocumentCatalog {
   /// You can register custom logic for creating [PDFOutlineItem]s by using
   /// [PDFOutlineAction.registerOutlineCreator].
   Future<List<PDFOutlineItem>?> getOutlines() async {
-    final dict = await _resolver
-        .resolve<PDFDictionary>(_dictionary[const PDFName('Outlines')]);
+    final dict = await resolver
+        .resolve<PDFDictionary>(dictionary[const PDFName('Outlines')]);
 
     if (dict == null) {
       return null;
@@ -43,15 +43,15 @@ class PDFDocumentCatalog {
 
   /// Reads the document's version into a version string
   Future<String?> getVersion() {
-    return _resolver
-        .resolve<PDFStringLike>(_dictionary[const PDFName('Version')])
+    return resolver
+        .resolve<PDFStringLike>(dictionary[const PDFName('Version')])
         .then((value) => value?.asString());
   }
 
   /// Reads the document's language into a language string
   Future<String?> getLanguage() {
-    return _resolver
-        .resolve<PDFStringLike>(_dictionary[const PDFName('Lang')])
+    return resolver
+        .resolve<PDFStringLike>(dictionary[const PDFName('Lang')])
         .then((value) => value?.asString());
   }
 
@@ -60,21 +60,21 @@ class PDFDocumentCatalog {
     required PDFPageNode? parent,
   }) async {
     final kidsArray =
-        (await _resolver.resolve<PDFArray>(pagesRoot[const PDFName('Kids')]))!;
+        (await resolver.resolve<PDFArray>(pagesRoot[const PDFName('Kids')]))!;
 
     final children = <PDFPageNode>[];
     final treeNode = PDFPageTreeNode(
-      _document,
+      document,
       parent,
-      _resolver,
+      resolver,
       pagesRoot,
       children,
-      (await _resolver.resolve<PDFNumber>(pagesRoot[const PDFName('Count')]))!
+      (await resolver.resolve<PDFNumber>(pagesRoot[const PDFName('Count')]))!
           .toInt(),
     );
 
     for (final kid in kidsArray) {
-      final childObject = (await _resolver.resolve<PDFDictionary>(kid))!;
+      final childObject = (await resolver.resolve<PDFDictionary>(kid))!;
       final type = (childObject[const PDFName('Type')] as PDFName).value;
       switch (type) {
         case 'Pages':
@@ -93,11 +93,11 @@ class PDFDocumentCatalog {
   Future<PDFPageNode> _readPage(PDFDictionary childObject,
       {required PDFPageTreeNode parent}) {
     return Future.value(
-        PDFPageObjectNode(_document, parent, _resolver, childObject));
+        PDFPageObjectNode(document, parent, resolver, childObject));
   }
 
   Future<List<PDFOutlineItem>> _readOutlines(PDFDictionary dictionary) async {
-    final firstRef = await _resolver
+    final firstRef = await resolver
         .resolve<PDFDictionary>(dictionary[const PDFName('First')]);
 
     PDFDictionary? currentOutline = firstRef;
@@ -106,7 +106,7 @@ class PDFDocumentCatalog {
 
     while (currentOutline != null) {
       final title = currentOutline[const PDFName('Title')] as PDFLiteralString;
-      final nextRef = await _resolver
+      final nextRef = await resolver
           .resolve<PDFDictionary>(currentOutline[const PDFName('Next')]);
 
       final destRef = currentOutline[const PDFName('Dest')];
@@ -114,7 +114,7 @@ class PDFDocumentCatalog {
         // TODO: Destination outline is not supported yet
         continue;
       }
-      final action = await _resolver
+      final action = await resolver
           .resolve<PDFDictionary>(currentOutline[const PDFName('A')]);
 
       if (action != null) {

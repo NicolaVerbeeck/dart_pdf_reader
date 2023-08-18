@@ -1,3 +1,7 @@
+## 0.2.2
+
+- Expose document, resolver and dictionary in catalog
+
 ## 0.2.1
 
 - Expose resolver in pages
