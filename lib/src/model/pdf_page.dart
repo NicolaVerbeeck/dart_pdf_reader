@@ -62,7 +62,7 @@ abstract class PDFPageNode {
 
   /// The parent of this page
   final PDFPageNode? parent;
-  final ObjectResolver _objectResolver;
+  final ObjectResolver objectResolver;
   final PDFDictionary _dictionary;
 
   /// The dictionary of this page
@@ -82,7 +82,7 @@ abstract class PDFPageNode {
   /// with a single element.
   Future<List<PDFStreamObject>?> get contentStreams async {
     final resolved =
-        await _objectResolver.resolve(_dictionary[const PDFName('Contents')]);
+        await objectResolver.resolve(_dictionary[const PDFName('Contents')]);
     if (resolved == null) {
       return null;
     } else if (resolved is PDFStreamObject) {
@@ -90,7 +90,7 @@ abstract class PDFPageNode {
     } else if (resolved is PDFArray) {
       final list = <PDFStreamObject>[];
       for (final e in resolved) {
-        final stream = (await _objectResolver.resolve<PDFStreamObject>(e))!;
+        final stream = (await objectResolver.resolve<PDFStreamObject>(e))!;
         list.add(stream);
       }
       return list;
@@ -102,13 +102,13 @@ abstract class PDFPageNode {
 
   /// Reads this page's resources if present
   Future<PDFDictionary?> get resources =>
-      _objectResolver.resolve(_dictionary[const PDFName('Resources')]);
+      objectResolver.resolve(_dictionary[const PDFName('Resources')]);
 
   /// Creates a new pdf page node
   PDFPageNode(
     this.document,
     this.parent,
-    this._objectResolver,
+    this.objectResolver,
     this._dictionary,
   );
 

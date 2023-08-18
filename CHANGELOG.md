@@ -1,3 +1,7 @@
+## 0.2.1
+
+- Expose resolver in pages
+
 ## 0.2.0
 
 - Bugfix: Hex strings now consume their ending bracket
