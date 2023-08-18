@@ -103,7 +103,7 @@ class PDFLiteralString extends PDFStringLike {
     if (_isUnicode()) {
       return utf16.decode(_value);
     }
-    return utf8.decode(_value);
+    return utf8.decode(_value, allowMalformed: true);
   }
 
   @override

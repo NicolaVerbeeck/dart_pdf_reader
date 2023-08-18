@@ -1,3 +1,7 @@
+## 0.2.3
+
+- Support malformed strings when decoding utf8
+
 ## 0.2.2
 
 - Expose document, resolver and dictionary in catalog
