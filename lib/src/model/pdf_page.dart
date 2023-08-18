@@ -159,9 +159,27 @@ class PDFPageTreeNode extends PDFPageNode {
 /// A single page of the document
 class PDFPageObjectNode extends PDFPageNode {
   late final PDFArray? _mediaBox = getOrInherited(const PDFName('MediaBox'));
+  late final PDFArray? _cropBox = getOrInherited(const PDFName('CropBox'));
+  late final PDFArray? _artBox = getOrInherited(const PDFName('ArtBox'));
+  late final PDFArray? _bleedBox = getOrInherited(const PDFName('BleedBox'));
+  late final PDFArray? _trimBox = getOrInherited(const PDFName('TrimBox'));
 
   /// Reads and parses this page's media box into a rectangle
-  late final Rectangle<double> mediaBox = _toRect(_mediaBox!);
+  late final Rectangle<double> mediaBox = _toRect(_mediaBox!)!;
+
+  /// Reads and parses this page's crop box into a rectangle
+  late final Rectangle<double>? cropBox = _toRect(_cropBox);
+
+  /// Reads and parses this page's art box into a rectangle
+  late final Rectangle<double>? artBox = _toRect(_artBox);
+
+  /// Reads and parses this page's bleed box into a rectangle
+  late final Rectangle<double>? bleedBox = _toRect(_bleedBox);
+
+  /// Reads and parses this page's trim box into a rectangle
+  late final Rectangle<double>? trimBox = _toRect(_trimBox);
+
+  late final PDFNumber? rotate = getOrInherited(const PDFName('Rotate'));
 
   /// Creates a new pdf page object node
   PDFPageObjectNode(
@@ -176,10 +194,10 @@ class PDFPageObjectNode extends PDFPageNode {
   String toString() {
     return 'PDFPageObjectNode{}::${super.toString()}';
   }
-
   // coverage:ignore-end
 
-  Rectangle<double> _toRect(PDFArray array) {
+  Rectangle<double>? _toRect(PDFArray? array) {
+    if (array == null) return null;
     if (array.length < 4) {
       throw ArgumentError(
           'Invalid rectangle, expected 4 elements, got ${array.length}');
