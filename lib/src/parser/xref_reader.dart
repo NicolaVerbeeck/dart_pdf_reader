@@ -16,10 +16,12 @@ class XRefTable {
 
   const XRefTable(this.sections);
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'XRefTable{sections: $sections}';
   }
+// coverage:ignore-end
 }
 
 class XRefReader {
@@ -27,6 +29,11 @@ class XRefReader {
 
   XRefReader(this.stream);
 
+  /// Reads the xref information from the stream
+  ///
+  /// Returns the table as the first element of the record
+  /// and the trailer as the second element if the trailer was required to
+  /// parse the xref table
   Future<(XRefTable, PDFDictionary?)> parseXRef() async {
     final offset = await _findXRefOffset();
     await stream.seek(offset);
@@ -46,6 +53,8 @@ class XRefReader {
     return (XRefTable(sections), null);
   }
 
+  /// Parse additional subsections starting at the current stream position
+  /// into the given [table]
   Future<void> parseXRefTableInto(XRefTable table) async {
     final sectionReader = XRefSectionReader();
     final sections = await sectionReader.readSubsections(stream);
@@ -64,7 +73,7 @@ class XRefReader {
     }
     final eofIndex = lines.indexOf('%%EOF');
     if (eofIndex == -1 || eofIndex == 0) {
-      throw Exception('%%EOF not found');
+      throw const ParseException('%%EOF not found');
     }
     return int.parse(lines[eofIndex - 1]);
   }
@@ -170,10 +179,9 @@ class XRefReader {
       _parseXRefAndTrailerFromStreamAtObject() async {
     await ReaderHelper.skipObjectHeader(TokenStream(stream));
     final xrefStream = (await PDFObjectParser(
-            stream,
-            IndirectObjectParser(
-                stream, IndirectObjectTable(const XRefTable([])))).parse())
-        as PDFStreamObject;
+      stream,
+      IndirectObjectParser(stream, IndirectObjectTable(const XRefTable([]))),
+    ).parse()) as PDFStreamObject;
     if (xrefStream.dictionary.entries[const PDFName('Type')] !=
         const PDFName('XRef')) {
       throw const ParseException('Compressed xref stream is of wrong type');
@@ -185,7 +193,8 @@ class XRefReader {
 
 class XRefSectionReader {
   Future<List<XRefSubsection>> readSubsections(
-      RandomAccessStream stream) async {
+    RandomAccessStream stream,
+  ) async {
     final subsections = <XRefSubsection>[];
     final line = await ReaderHelper.readLineSkipEmpty(stream);
     if (line == 'xref') {
@@ -200,7 +209,8 @@ class XRefSectionReader {
 
 class _XRefSubsectionReader {
   Future<List<XRefSubsection>> readXRefSubsections(
-      RandomAccessStream stream) async {
+    RandomAccessStream stream,
+  ) async {
     final subsections = <XRefSubsection>[];
     while (true) {
       final lastPos = await stream.position;
@@ -219,7 +229,9 @@ class _XRefSubsectionReader {
   }
 
   Future<XRefSubsection> readXRefSubsection(
-      String firstLine, RandomAccessStream stream) async {
+    String firstLine,
+    RandomAccessStream stream,
+  ) async {
     final parts = firstLine.split(' ');
     assert(parts.length == 2);
 
@@ -265,10 +277,12 @@ class XRefSection {
     required this.entries,
   });
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'XRefSection{previousXRefOffset: $dict, entries: $entries}';
   }
+// coverage:ignore-end
 }
 
 @immutable
@@ -287,10 +301,12 @@ class XRefEntry {
     this.compressedObjectStreamId,
   });
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'XRefEntry{id: $id, offset: $offset, generation: $generation, free: $free, compressedObjectStreamId: $compressedObjectStreamId}';
   }
+// coverage:ignore-end
 }
 
 @immutable
@@ -307,10 +323,13 @@ class XRefSubsection {
     required this.endIndex,
   });
 
+  // coverage:ignore-start
   @override
   String toString() {
     return 'XRefSubsection{startIndex: $startIndex, numEntries: $numEntries, entries: $entries, endIndex: $endIndex}';
   }
+
+  // coverage:ignore-end
 
   bool hasId(int objectId) => startIndex <= objectId && objectId < endIndex;
 
