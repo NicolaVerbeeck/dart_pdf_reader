@@ -3,9 +3,10 @@ import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 
-// TODO Optimize with buffering
 /// Implementation of [RandomAccessStream] which reads from a file
 /// Currently this does not perform smart buffering and can be quite slow
+///
+/// Wrap a [FileStream] in a [BufferedRandomAccessStream] to improve performance
 class FileStream extends RandomAccessStream {
   final RandomAccessFile _file;
 

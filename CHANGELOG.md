@@ -1,3 +1,7 @@
+## 0.2.6
+
+- Add buffered stream implementation to enable for faster reading of files
+
 ## 0.2.5
 
 - Make ObjectResolver exported as it is used in the public API of Page
@@ -43,6 +47,7 @@
 - Add fast path for copying bytes from ByteStream
 
 ## 0.1.3
+
 - Add support for pdf bookmarks (outlines)
 
 ## 0.1.2
