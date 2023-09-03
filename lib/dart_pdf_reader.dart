@@ -9,5 +9,6 @@ export 'src/model/pdf_types.dart';
 export 'src/parser/object_resolver.dart';
 export 'src/parser/pdf_parser.dart';
 export 'src/utils/byte_stream.dart';
+export 'src/utils/cache/buffered_random_access_stream.dart';
 export 'src/utils/file_stream.dart';
 export 'src/utils/random_access_stream.dart';
