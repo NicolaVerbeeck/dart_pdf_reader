@@ -1,4 +1,6 @@
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/model/pdf_document.dart';
+import 'package:dart_pdf_reader/src/model/pdf_document_catalog.dart';
+import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';

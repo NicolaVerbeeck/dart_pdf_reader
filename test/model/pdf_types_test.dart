@@ -3,8 +3,10 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:charset/charset.dart';
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/error/exceptions.dart';
+import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
+import 'package:dart_pdf_reader/src/utils/byte_stream.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:test/test.dart';
 
