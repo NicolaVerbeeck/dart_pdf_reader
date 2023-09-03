@@ -1,3 +1,7 @@
+## 0.2.5
+
+- Make ObjectResolver exported as it is used in the public API of Page
+
 ## 0.2.4
 
 - Add direct support for accessing page's art, bleed, crop and trim boxes
