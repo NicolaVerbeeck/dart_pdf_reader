@@ -19,11 +19,11 @@ abstract class PDFObject {
 @immutable
 class PDFNumber extends PDFObject {
   /// The precision used when printing the number using [toString].
-  static const int _printPrecision = 5;
+  static const int _printPrecision = 10;
 
   /// The epsilon used when determining if a number is close enough to an integer
   /// See [_truncate].
-  static const double _epsilon = 0.000001;
+  static const double _epsilon = 0.00000000001;
 
   /// The value of the number.
   final num _value;
