@@ -1,3 +1,9 @@
+## 0.4.0
+
+- Add experimental support for extends on object streams (#29)
+- Ensure compressed xrefs can be read without decode parameters (#33)
+- Seek further backwards when searching for %%EOF (#34)
+
 ## 0.3.0
 
 - Added `pageCount` to `PDFPages`

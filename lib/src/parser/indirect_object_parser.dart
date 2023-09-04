@@ -59,10 +59,6 @@ class IndirectObjectParser {
     final stream =
         (await readObjectAt(compressedContainer)).object as PDFStreamObject;
     assert(stream.dictionary[const PDFName('Type')] == const PDFName('ObjStm'));
-    if (stream.dictionary.has(const PDFName('Extends'))) {
-      throw const ParseException(
-          'Extends on compressed stream not supported yet');
-    }
 
     final streamData = await stream.read(resolver);
     final internalStream = ByteStream(streamData);
@@ -99,9 +95,24 @@ class IndirectObjectParser {
         ),
       );
     }
+    if (returnObject == null) {
+      // Could not find the object but this stream is known to extend another
+      if (stream.dictionary.has(const PDFName('Extends'))) {
+        return _readFromCompressedStream(XRefEntry(
+          id: entry.id,
+          offset: -1,
+          generation: entry.generation,
+          free: entry.free,
+          compressedObjectStreamId: (stream.dictionary[const PDFName('Extends')]
+                  as PDFObjectReference)
+              .objectId,
+        ));
+      }
+      throw const ParseException('Requested object not found');
+    }
 
     final reference = PDFIndirectObject(
-      object: returnObject!,
+      object: returnObject,
       generationNumber: entry.generation,
       objectId: entry.id,
     );

@@ -1,3 +1,4 @@
+import 'dart:math';
 import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
@@ -27,6 +28,9 @@ class XRefTable {
 }
 
 class XRefReader {
+  // How far behind the end of the file to look for the eof marker
+  static const _lookBehind = 1024;
+
   final RandomAccessStream stream;
 
   XRefReader(this.stream);
@@ -64,7 +68,7 @@ class XRefReader {
   }
 
   Future<int> _findXRefOffset() async {
-    await stream.seek(await stream.length - 100);
+    await stream.seek(max(0, (await stream.length) - _lookBehind));
     final lines = <String>[];
     String? line;
     while ((line = await ReaderHelper.readLine(stream)) != null) {
@@ -73,7 +77,7 @@ class XRefReader {
         lines.add(line);
       }
     }
-    final eofIndex = lines.indexOf('%%EOF');
+    final eofIndex = lines.lastIndexOf('%%EOF');
     if (eofIndex == -1 || eofIndex == 0) {
       throw const ParseException('%%EOF not found');
     }
@@ -351,5 +355,5 @@ class _FakeObjectResolver implements ObjectResolver {
 
   @override
   Future<T?> resolve<T extends PDFObject>(PDFObject? toResolve) =>
-      Future.value(toResolve as T);
+      Future.value(toResolve == null ? null : toResolve as T);
 }
