@@ -271,8 +271,6 @@ class PDFObjectParser {
     final length = object.toInt();
     final start = await _buffer.position;
     await _buffer.seek(start + length);
-    final endLine = await ReaderHelper.readLineSkipEmpty(_buffer);
-    assert(endLine == 'endstream');
 
     return PDFStreamObject(
       dictionary: dictionary,
