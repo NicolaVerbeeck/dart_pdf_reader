@@ -42,6 +42,23 @@ void main() {
         expect(await ReaderHelper.readLine(stream), '%456');
       });
     });
+    group('Test read word', () {
+      test('Test read word new on lines', () async {
+        final stream =
+            ByteStream(Uint8List.fromList(utf8.encode(' trailer\nvar')));
+        expect(await ReaderHelper.readWordTrimmed(stream), 'trailer');
+      });
+      test('Test read word same line', () async {
+        final stream =
+            ByteStream(Uint8List.fromList(utf8.encode('\ntrailer <<var>>')));
+        expect(await ReaderHelper.readWordTrimmed(stream), 'trailer');
+      });
+      test('Test read word ended with comments', () async {
+        final stream =
+            ByteStream(Uint8List.fromList(utf8.encode('\t\ttrailer%var')));
+        expect(await ReaderHelper.readWordTrimmed(stream), 'trailer');
+      });
+    });
     group('From hex', () {
       test('Test bytes from hex', () {
         expect(

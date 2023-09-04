@@ -7,6 +7,7 @@ import 'package:dart_pdf_reader/src/parser/pdf_object_parser.dart';
 import 'package:dart_pdf_reader/src/parser/xref_reader.dart';
 import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
 import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
+import 'package:meta/meta.dart';
 
 /// Parses a PDF document from a [RandomAccessStream].
 class PDFParser {
@@ -32,7 +33,7 @@ class PDFParser {
     while (true) {
       final trailer = (first && parsedXRefTrailer != null)
           ? parsedXRefTrailer
-          : await _parseTrailer(objectParser);
+          : await parseTrailer(objectParser, _buffer);
       mainTrailer ??= trailer;
       final prev = trailer[const PDFName('Prev')] as PDFNumber?;
       if (prev == null) break;
@@ -46,12 +47,17 @@ class PDFParser {
       objectResolver: ObjectResolver(objectParser, table),
     );
   }
+}
 
-  Future<PDFDictionary> _parseTrailer(IndirectObjectParser parser) async {
-    final line = await ReaderHelper.readLineSkipEmpty(_buffer);
-    if (line != 'trailer') {
-      throw Exception('Expected \'trailer\'');
-    }
-    return await PDFObjectParser(_buffer, parser).parse() as PDFDictionary;
+/// Parse the document trailer dictionary from [buffer]
+@visibleForTesting
+Future<PDFDictionary> parseTrailer(
+  IndirectObjectParser parser,
+  RandomAccessStream buffer,
+) async {
+  final line = await ReaderHelper.readWordTrimmed(buffer);
+  if (line != 'trailer') {
+    throw Exception('Expected \'trailer\'');
   }
+  return await PDFObjectParser(buffer, parser).parse() as PDFDictionary;
 }

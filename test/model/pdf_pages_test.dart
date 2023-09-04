@@ -62,6 +62,7 @@ void main() {
         4,
       );
       final sut = PDFPages(root);
+      expect(sut.pageCount, 4);
       expect(sut.getPageAtIndex(0), page1);
       expect(sut.getPageAtIndex(1), page2);
       expect(sut.getPageAtIndex(2), page3);
