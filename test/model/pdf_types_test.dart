@@ -34,9 +34,11 @@ void main() {
       test('Test toString does not truncate double to int', () {
         final pdfNumber = const PDFNumber(12.002);
         expect(pdfNumber.toString(), equals('12.002'));
+        final pdfNumber2 = const PDFNumber(12.0000000002);
+        expect(pdfNumber2.toString(), equals('12.0000000002'));
       });
       test('Test toString truncates to int because of trailing zero', () {
-        final pdfNumber = const PDFNumber(12.000002);
+        final pdfNumber = const PDFNumber(12.00000000002);
         expect(pdfNumber.toString(), equals('12'));
       });
       test('Test toInt with int', () {

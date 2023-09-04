@@ -9,6 +9,9 @@ import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 class PDFPages {
   final PDFPageTreeNode _root;
 
+  /// The number of pages in the document
+  int get pageCount => _root.length;
+
   /// Create a new instance of [PDFPages]
   PDFPages(this._root);
 

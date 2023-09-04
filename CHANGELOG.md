@@ -1,3 +1,8 @@
+## 0.3.0
+
+- Added `pageCount` to `PDFPages`
+- Updated `PDFNumber` to use 10 fraction digits in `toString` instead of 5
+
 ## 0.2.6
 
 - Add buffered stream implementation to enable for faster reading of files
