@@ -1,6 +1,7 @@
 library dart_pdf_reader;
 
 export 'src/error/exceptions.dart';
+export 'src/model/pdf_constants.dart';
 export 'src/model/pdf_document.dart';
 export 'src/model/pdf_document_catalog.dart';
 export 'src/model/pdf_outline.dart' hide clearOutlineCreators;

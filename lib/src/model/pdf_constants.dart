@@ -1,6 +1,7 @@
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:meta/meta.dart';
 
+/// Collection of names used in PDF files
 @immutable
 final class PDFNames {
   PDFNames._();

@@ -1,3 +1,7 @@
+## 0.4.2
+
+- Export PDFNames
+
 ## 0.4.1
 
 - Don't require endstream to be followed by a newline (#40)
