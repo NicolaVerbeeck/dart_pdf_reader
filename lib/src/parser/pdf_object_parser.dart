@@ -255,7 +255,7 @@ class PDFObjectParser {
   }
 
   Future<PDFStreamObject?> _parseStream(PDFDictionary dictionary) async {
-    final line = await ReaderHelper.readLine(_buffer);
+    final line = await ReaderHelper.readWordTrimmed(_buffer);
     if ('tartxref' == line) return null;
     assert('tream' == line);
 
