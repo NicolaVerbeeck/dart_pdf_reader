@@ -27,7 +27,8 @@ void stringParserTests() {
       });
       test('Test escaping', () async {
         final parsed =
-            await createParserFromString('(\\f\\n\\r\\t\\(\\)\\\\\\045)').parse();
+            await createParserFromString('(\\f\\n\\r\\t\\(\\)\\\\\\045)')
+                .parse();
         expect(parsed, isA<PDFLiteralString>());
         parsed as PDFLiteralString;
         expect(parsed.asString(), '\f\n\r\t()\\%');

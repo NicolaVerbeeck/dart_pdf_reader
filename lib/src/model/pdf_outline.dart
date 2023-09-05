@@ -1,5 +1,4 @@
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:meta/meta.dart';
 
 /// Action types for pdf outlines

@@ -38,7 +38,8 @@ void streamParserTests() {
     });
     test('Test stream with data', () async {
       final stream =
-      await createParserFromString('<</Length 3>>stream abcendstream').parse();
+          await createParserFromString('<</Length 3>>stream abcendstream')
+              .parse();
       expect(stream, isA<PDFStreamObject>());
 
       stream as PDFStreamObject;

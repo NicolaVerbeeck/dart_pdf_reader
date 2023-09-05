@@ -1,5 +1,4 @@
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
 import 'package:dart_pdf_reader/src/utils/list_extensions.dart';
