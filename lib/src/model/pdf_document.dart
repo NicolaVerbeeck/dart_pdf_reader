@@ -1,3 +1,4 @@
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/model/pdf_document_catalog.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
@@ -10,8 +11,7 @@ class PDFDocument {
 
   /// Extracts the [PDFDocumentCatalog] from the document
   Future<PDFDocumentCatalog> get catalog async {
-    final dict =
-        await resolve<PDFDictionary>(mainTrailer[const PDFName('Root')]);
+    final dict = await resolve<PDFDictionary>(mainTrailer[PDFNames.root]);
     return PDFDocumentCatalog(this, dict!, _objectResolver);
   }
 

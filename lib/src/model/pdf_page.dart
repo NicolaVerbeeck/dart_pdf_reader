@@ -1,6 +1,7 @@
 import 'dart:math';
 
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/model/pdf_document.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
@@ -85,7 +86,7 @@ abstract class PDFPageNode {
   /// with a single element.
   Future<List<PDFStreamObject>?> get contentStreams async {
     final resolved =
-        await objectResolver.resolve(_dictionary[const PDFName('Contents')]);
+        await objectResolver.resolve(_dictionary[PDFNames.contents]);
     if (resolved == null) {
       return null;
     } else if (resolved is PDFStreamObject) {
@@ -105,7 +106,7 @@ abstract class PDFPageNode {
 
   /// Reads this page's resources if present
   Future<PDFDictionary?> get resources =>
-      objectResolver.resolve(_dictionary[const PDFName('Resources')]);
+      objectResolver.resolve(_dictionary[PDFNames.resources]);
 
   /// Creates a new pdf page node
   PDFPageNode(
@@ -161,11 +162,11 @@ class PDFPageTreeNode extends PDFPageNode {
 
 /// A single page of the document
 class PDFPageObjectNode extends PDFPageNode {
-  late final PDFArray? _mediaBox = getOrInherited(const PDFName('MediaBox'));
-  late final PDFArray? _cropBox = getOrInherited(const PDFName('CropBox'));
-  late final PDFArray? _artBox = getOrInherited(const PDFName('ArtBox'));
-  late final PDFArray? _bleedBox = getOrInherited(const PDFName('BleedBox'));
-  late final PDFArray? _trimBox = getOrInherited(const PDFName('TrimBox'));
+  late final PDFArray? _mediaBox = getOrInherited(PDFNames.mediaBox);
+  late final PDFArray? _cropBox = getOrInherited(PDFNames.cropBox);
+  late final PDFArray? _artBox = getOrInherited(PDFNames.artBox);
+  late final PDFArray? _bleedBox = getOrInherited(PDFNames.bleedBox);
+  late final PDFArray? _trimBox = getOrInherited(PDFNames.trimBox);
 
   /// Reads and parses this page's media box into a rectangle
   late final Rectangle<double> mediaBox = _toRect(_mediaBox!)!;
@@ -182,7 +183,7 @@ class PDFPageObjectNode extends PDFPageNode {
   /// Reads and parses this page's trim box into a rectangle
   late final Rectangle<double>? trimBox = _toRect(_trimBox);
 
-  late final PDFNumber? rotate = getOrInherited(const PDFName('Rotate'));
+  late final PDFNumber? rotate = getOrInherited(PDFNames.rotate);
 
   /// Creates a new pdf page object node
   PDFPageObjectNode(

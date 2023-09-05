@@ -1,3 +1,9 @@
+## 0.4.1
+
+- Don't require endstream to be followed by a newline (#40)
+- Use read word to read trailer header (#41)
+- Cleanup usages of PDFName and group common names in PDFNames
+
 ## 0.4.0
 
 - Add experimental support for extends on object streams (#29)

@@ -2,6 +2,7 @@ import 'dart:io';
 import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/utils/filter/direct_byte_stream.dart';
 import 'package:dart_pdf_reader/src/utils/list_extensions.dart';
 

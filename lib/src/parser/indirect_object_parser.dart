@@ -1,5 +1,6 @@
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
 import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 import 'package:dart_pdf_reader/src/parser/pdf_object_parser.dart';
@@ -58,19 +59,19 @@ class IndirectObjectParser {
         _objectTable.getObjectReferenceFor(entry.compressedObjectStreamId!)!;
     final stream =
         (await readObjectAt(compressedContainer)).object as PDFStreamObject;
-    assert(stream.dictionary[const PDFName('Type')] == const PDFName('ObjStm'));
+    assert(stream.dictionary[PDFNames.type] == PDFNames.objStm);
 
     final streamData = await stream.read(resolver);
     final internalStream = ByteStream(streamData);
     final tokenStream = TokenStream(internalStream);
 
-    final first = (await resolver
-            .resolve<PDFNumber>(stream.dictionary[const PDFName('First')]))!
-        .toInt();
+    final first =
+        (await resolver.resolve<PDFNumber>(stream.dictionary[PDFNames.first]))!
+            .toInt();
 
-    final n = (await resolver
-            .resolve<PDFNumber>(stream.dictionary[const PDFName('N')]))!
-        .toInt();
+    final n =
+        (await resolver.resolve<PDFNumber>(stream.dictionary[PDFNames.n]))!
+            .toInt();
 
     final objectNumbers = List<int>.filled(n, 0);
     final addresses = List<int>.filled(n, 0);
@@ -97,15 +98,15 @@ class IndirectObjectParser {
     }
     if (returnObject == null) {
       // Could not find the object but this stream is known to extend another
-      if (stream.dictionary.has(const PDFName('Extends'))) {
+      if (stream.dictionary.has(PDFNames.extend)) {
         return _readFromCompressedStream(XRefEntry(
           id: entry.id,
           offset: -1,
           generation: entry.generation,
           free: entry.free,
-          compressedObjectStreamId: (stream.dictionary[const PDFName('Extends')]
-                  as PDFObjectReference)
-              .objectId,
+          compressedObjectStreamId:
+              (stream.dictionary[PDFNames.extend] as PDFObjectReference)
+                  .objectId,
         ));
       }
       throw const ParseException('Requested object not found');

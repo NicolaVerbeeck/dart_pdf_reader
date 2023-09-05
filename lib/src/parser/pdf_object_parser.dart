@@ -1,4 +1,5 @@
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
 import 'package:dart_pdf_reader/src/parser/token_stream.dart';
 import 'package:dart_pdf_reader/src/utils/list_extensions.dart';
@@ -258,7 +259,7 @@ class PDFObjectParser {
     if ('tartxref' == line) return null;
     assert('tream' == line);
 
-    var object = dictionary[const PDFName('Length')];
+    var object = dictionary[PDFNames.length];
     while (object is PDFObjectReference) {
       object = await _indirectObjectParser.getObjectFor(object);
     }
@@ -277,7 +278,7 @@ class PDFObjectParser {
       dataSource: _buffer,
       offset: start,
       length: length,
-      isBinary: dictionary.has(const PDFName('Filter')),
+      isBinary: dictionary.has(PDFNames.filter),
     );
   }
 
