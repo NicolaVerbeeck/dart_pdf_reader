@@ -1,4 +1,5 @@
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:meta/meta.dart';
 
 /// Action types for pdf outlines
@@ -81,8 +82,7 @@ abstract class PDFOutlineAction {
   factory PDFOutlineAction.fromDictionary(
     PDFDictionary dictionary,
   ) {
-    final typeName =
-        (dictionary[const PDFName('S')] as PDFName).value.toLowerCase();
+    final typeName = (dictionary[PDFNames.s] as PDFName).value.toLowerCase();
     final PDFOutlineActionType type;
     try {
       type = PDFOutlineActionType.values.byName(typeName);
@@ -95,7 +95,7 @@ abstract class PDFOutlineAction {
     switch (type) {
       case PDFOutlineActionType.goto:
         return PDFOutlineGoToAction(
-          destination: dictionary[const PDFName('D')]!,
+          destination: dictionary[PDFNames.d]!,
         );
       default:
         throw ActionTypeNotSupported('Unhandled outline action type: $type');

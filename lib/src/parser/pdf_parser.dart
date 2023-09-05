@@ -1,4 +1,5 @@
 import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/model/pdf_document.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
@@ -35,7 +36,7 @@ class PDFParser {
           ? parsedXRefTrailer
           : await parseTrailer(objectParser, _buffer);
       mainTrailer ??= trailer;
-      final prev = trailer[const PDFName('Prev')] as PDFNumber?;
+      final prev = trailer[PDFNames.prev] as PDFNumber?;
       if (prev == null) break;
       await _buffer.seek(prev.toInt());
 

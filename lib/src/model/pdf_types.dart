@@ -5,6 +5,7 @@ import 'dart:typed_data';
 import 'package:charset/charset.dart';
 import 'package:collection/collection.dart';
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
 import 'package:dart_pdf_reader/src/utils/filter/stream_filter.dart';
 import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
@@ -433,7 +434,7 @@ class PDFStreamObject extends PDFObject {
   Future<Uint8List> read(ObjectResolver resolver) async {
     final raw = await readRaw();
     final filter =
-        await resolver.resolve<PDFObject>(dictionary[const PDFName('Filter')]);
+        await resolver.resolve<PDFObject>(dictionary[PDFNames.filter]);
     if (filter == null) return raw;
     final filters = <StreamFilter>[];
     if (filter is PDFArray) {
@@ -446,8 +447,8 @@ class PDFStreamObject extends PDFObject {
       throw const ParseException(
           'Filter needs to be a name or an array of names');
     }
-    final decodeParams = await resolver
-        .resolve<PDFObject>(dictionary[const PDFName('DecodeParms')]);
+    final decodeParams =
+        await resolver.resolve<PDFObject>(dictionary[PDFNames.decodeParms]);
     final params = <PDFObject>[];
     if (decodeParams is PDFArray) {
       for (final p in decodeParams) {

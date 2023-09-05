@@ -16,16 +16,16 @@ class FlateDecodeFilter extends StreamFilter {
 
   // From iTextPDF 7
   static Uint8List _decodeWithPredictor(Uint8List bytes, PDFDictionary params) {
-    final predictor = params[const PDFName('Predictor')];
+    final predictor = params[PDFNames.predictor];
     if (predictor is! PDFNumber) return bytes;
 
     final predictorInt = predictor.toInt();
     if (predictorInt < 10 && predictorInt != 2) return bytes;
 
-    final width = params[const PDFName('Columns')]?.toIntOrNull() ?? 1;
-    final colors = params[const PDFName('Colors')]?.toIntOrNull() ?? 1;
+    final width = params[PDFNames.columns]?.toIntOrNull() ?? 1;
+    final colors = params[PDFNames.colors]?.toIntOrNull() ?? 1;
     final bitsPerComponent =
-        params[const PDFName('BitsPerComponent')]?.toIntOrNull() ?? 8;
+        params[PDFNames.bitsPerComponent]?.toIntOrNull() ?? 8;
     final bytesPerPixel = (colors * bitsPerComponent) ~/ 8;
     final bytesPerRow = (colors * width * bitsPerComponent + 7) ~/ 8;
 

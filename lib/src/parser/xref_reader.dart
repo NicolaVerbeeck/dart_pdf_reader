@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:dart_pdf_reader/src/error/exceptions.dart';
 import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
+import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
 import 'package:dart_pdf_reader/src/model/pdf_types.dart';
 import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
 import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
@@ -88,12 +89,11 @@ class XRefReader {
     PDFDictionary dictionary,
     PDFStreamObject stream,
   ) async {
-    final size =
-        (dictionary.entries[const PDFName('Size')] as PDFNumber).toInt();
-    final index = dictionary.entries[const PDFName('Index')] as PDFArray? ??
+    final size = (dictionary.entries[PDFNames.size] as PDFNumber).toInt();
+    final index = dictionary.entries[PDFNames.index] as PDFArray? ??
         PDFArray([const PDFNumber(0), PDFNumber(size)]);
 
-    final w = dictionary.entries[const PDFName('W')] as PDFArray?;
+    final w = dictionary.entries[PDFNames.w] as PDFArray?;
     if (w == null) throw const ParseException('Xref stream requires W entry');
     if (w.length != 3) {
       throw const ParseException(
@@ -112,12 +112,12 @@ class XRefReader {
       thirdW,
     );
     final trailerEntries = <PDFName, PDFObject>{}..addAll(dictionary.entries);
-    trailerEntries.remove(const PDFName('DecodeParms'));
-    trailerEntries.remove(const PDFName('Filter'));
-    trailerEntries.remove(const PDFName('Length'));
-    trailerEntries.remove(const PDFName('Prev'));
+    trailerEntries.remove(PDFNames.decodeParms);
+    trailerEntries.remove(PDFNames.filter);
+    trailerEntries.remove(PDFNames.length);
+    trailerEntries.remove(PDFNames.prev);
 
-    final prev = dictionary[const PDFName('Prev')] as PDFNumber?;
+    final prev = dictionary[PDFNames.prev] as PDFNumber?;
     if (prev != null) {
       await this.stream.seek(prev.toInt());
       final (newXRef, _) = await _parseXRefAndTrailerFromStreamAtObject();
@@ -188,8 +188,7 @@ class XRefReader {
       stream,
       IndirectObjectParser(stream, IndirectObjectTable(const XRefTable([]))),
     ).parse()) as PDFStreamObject;
-    if (xrefStream.dictionary.entries[const PDFName('Type')] !=
-        const PDFName('XRef')) {
+    if (xrefStream.dictionary.entries[PDFNames.type] != PDFNames.xRef) {
       throw const ParseException('Compressed xref stream is of wrong type');
     }
     return _parseXRefAndTrailerFromCompressedStream(
