@@ -17,6 +17,25 @@ abstract class ReaderHelper {
     return null;
   }
 
+  /// Try to read the first word from the buffer, stripping comments
+  static Future<String> readWordTrimmed(RandomAccessStream buffer) async {
+    final tokenStream = TokenStream(buffer);
+    await skipUntilFirstNonWhitespace(tokenStream);
+    final word = StringBuffer();
+    while (true) {
+      final tokenType = await tokenStream.nextTokenType();
+      if (tokenType != TokenType.normal) {
+        if (tokenType == TokenType.comment) {
+          // Swallow comment line
+          await readLine(buffer);
+        }
+        break;
+      }
+      word.writeCharCode(await tokenStream.consumeToken());
+    }
+    return word.toString();
+  }
+
   /// Attempts to read a line from the buffer, returning null if end of stream
   /// was reached. See [RandomAccessStream.readLine].
   static Future<String?> readLine(RandomAccessStream buffer) async {
