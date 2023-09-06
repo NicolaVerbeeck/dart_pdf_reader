@@ -33,12 +33,6 @@ abstract class ReaderHelper {
       }
       word.writeCharCode(await tokenStream.consumeToken());
     }
-    // Trim the end
-    try {
-      await skipUntilFirstNonWhitespace(tokenStream);
-    } on EOFException {
-      // Ignore
-    }
     return word.toString();
   }
 

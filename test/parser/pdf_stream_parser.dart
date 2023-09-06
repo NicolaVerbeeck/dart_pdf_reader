@@ -6,7 +6,8 @@ void streamParserTests() {
   group('Stream parser tests', () {
     test('Test empty stream', () async {
       final stream =
-          await createParserFromString('<</Length 0>>stream endstream').parse();
+          await createParserFromString('<</Length 0>>stream\nendstream')
+              .parse();
       expect(stream, isA<PDFStreamObject>());
 
       stream as PDFStreamObject;
@@ -23,7 +24,7 @@ void streamParserTests() {
           .thenAnswer((invocation) async => const PDFIndirectObject(
               objectId: 1, generationNumber: 0, object: PDFNumber(0)));
       final stream = await createParserFromString(
-        '<</Length 1 0 R>>stream endstream',
+        '<</Length 1 0 R>>stream\nendstream',
         mockParser,
       ).parse();
       expect(stream, isA<PDFStreamObject>());
@@ -38,7 +39,7 @@ void streamParserTests() {
     });
     test('Test stream with data', () async {
       final stream =
-          await createParserFromString('<</Length 3>>stream abcendstream')
+          await createParserFromString('<</Length 3>>stream\nabcendstream')
               .parse();
       expect(stream, isA<PDFStreamObject>());
 
