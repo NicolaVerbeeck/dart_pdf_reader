@@ -4,9 +4,13 @@ import 'package:meta/meta.dart';
 /// Collection of names used in PDF files
 @immutable
 final class PDFNames {
+  // coverage:ignore-start
   PDFNames._();
 
+  // coverage:ignore-end
+
   static const bm = PDFName('BM');
+
   // ignore: constant_identifier_names
   static const CA = PDFName('CA');
   static const pdf = PDFName('PDF');

@@ -27,10 +27,11 @@ void stringParserTests() {
       });
       test('Test escaping', () async {
         final parsed =
-            await createParserFromString('(\\n\\r\\t\\(\\)\\\\\\045)').parse();
+            await createParserFromString('(\\f\\n\\r\\t\\(\\)\\\\\\045)')
+                .parse();
         expect(parsed, isA<PDFLiteralString>());
         parsed as PDFLiteralString;
-        expect(parsed.asString(), '\n\r\t()\\%');
+        expect(parsed.asString(), '\f\n\r\t()\\%');
       });
       test('Test new line in string', () async {
         final parsed =
@@ -43,6 +44,18 @@ void stringParserTests() {
     group('Hex strings', () {
       test('Test parse hex string', () async {
         final parsed = await createParserFromString('<48656c6c6f>').parse();
+        expect(parsed, isA<PDFHexString>());
+        parsed as PDFHexString;
+        expect(parsed.asString(), 'Hello');
+      });
+      test('Test parse uneven hex string', () async {
+        final parsed = await createParserFromString('<48656c6c6>').parse();
+        expect(parsed, isA<PDFHexString>());
+        parsed as PDFHexString;
+        expect(parsed.asString(), 'Hell`');
+      });
+      test('Test parse hex with whitespace', () async {
+        final parsed = await createParserFromString('<48656c 6c\n6f>').parse();
         expect(parsed, isA<PDFHexString>());
         parsed as PDFHexString;
         expect(parsed.asString(), 'Hello');
