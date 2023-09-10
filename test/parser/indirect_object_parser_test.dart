@@ -18,8 +18,13 @@ void main() {
 
     setUp(() {
       indirectObjectTable = MockIndirectObjectTable();
-      buffer = ByteStream(Uint8List.fromList(utf8
-          .encode('2 0 obj\n<</Test/Me>>\nendobj\n1 0 obj\n-98.1827\nendobj')));
+      buffer = ByteStream(Uint8List.fromList(
+          utf8.encode('2 0 obj\n<</Test/Me>>\nendobj\n1 0 obj\n-98.1827\n'
+              'endobj\n3 0 obj\n<</Length 41/Type/ObjStm/First 8/N 2>>stream\n'
+              '4 0\n'
+              '5 26\n'
+              '<</Type/Name/First false>>(Hello)'
+              'endstream')));
       indirectObjectParser = IndirectObjectParser(buffer, indirectObjectTable);
     });
 
@@ -49,6 +54,35 @@ void main() {
       );
       obj as PDFIndirectObject;
       expect(obj.object, const PDFNumber(-98.1827));
+    });
+    test('Test readObject compressed', () async {
+      when(() => indirectObjectTable[1]).thenReturn(null);
+      when(() => indirectObjectTable.getObjectReferenceFor(4)).thenReturn(
+        const XRefEntry(
+          id: 4,
+          offset: 0,
+          generation: 0,
+          compressedObjectStreamId: 2,
+          free: false,
+        ),
+      );
+      when(() => indirectObjectTable.getObjectReferenceFor(2))
+          .thenReturn(const XRefEntry(
+        id: 3,
+        offset: 53,
+        generation: 0,
+        free: false,
+      ));
+      final obj = await indirectObjectParser.getObjectFor(
+        const PDFObjectReference(objectId: 4),
+      );
+      obj as PDFIndirectObject;
+      expect(
+          obj.object,
+          PDFDictionary({
+            const PDFName('Type'): const PDFName('Name'),
+            const PDFName('First'): const PDFBoolean(false),
+          }));
     });
   });
 }
