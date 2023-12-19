@@ -1,3 +1,8 @@
+## 0.4.3
+
+- Add more tests
+- Bump lints
+
 ## 0.4.2
 
 - Export PDFNames
