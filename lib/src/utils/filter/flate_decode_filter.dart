@@ -9,7 +9,7 @@ class FlateDecodeFilter extends StreamFilter {
     PDFObject? params,
     PDFDictionary streamDictionary,
   ) {
-    final decoded = zlib.decode(bytes).asUint8List();
+    final decoded = const ZLibDecoder().decodeBytes(bytes).asUint8List();
     if (params is PDFDictionary) return _decodeWithPredictor(decoded, params);
     return decoded;
   }

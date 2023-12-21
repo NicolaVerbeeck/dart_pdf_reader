@@ -1,7 +1,5 @@
-import 'dart:io';
-
 /// A class of exceptions thrown when an unexpected end of file is reached
-class EOFException implements IOException {
+class EOFException implements Exception {
   const EOFException();
 
   // coverage:ignore-start
@@ -11,7 +9,7 @@ class EOFException implements IOException {
 }
 
 /// A class of exceptions thrown when an unexpected parse error is encountered
-class ParseException implements IOException {
+class ParseException implements Exception {
   final String _message;
 
   const ParseException(this._message);
