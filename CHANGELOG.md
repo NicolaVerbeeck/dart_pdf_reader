@@ -1,3 +1,7 @@
+## 0.5.1
+
+- Fix parsing PDFs where stream or startxref ends with extra whitespace (#50)
+
 ## 0.5.0
 
 - Add support for web by using the archive package. (#48)

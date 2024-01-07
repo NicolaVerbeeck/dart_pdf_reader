@@ -254,8 +254,8 @@ class PDFObjectParser {
   }
 
   Future<PDFStreamObject?> _parseStream(PDFDictionary dictionary) async {
-    final line = await ReaderHelper.readLine(_buffer);
-    if ('tartxref' == line) return null;
+    final line = (await ReaderHelper.readLine(_buffer))?.trim();
+    if (line == 'tartxref') return null;
     assert('tream' == line);
 
     var object = dictionary[PDFNames.length];
