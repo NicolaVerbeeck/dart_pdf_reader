@@ -52,5 +52,31 @@ void streamParserTests() {
       final raw = await stream.readRaw();
       expect(raw, [97, 98, 99]);
     });
+    test('Test stream extra space, with data', () async {
+      final stream =
+          await createParserFromString('<</Length 3>>stream \nabcendstream')
+              .parse();
+      expect(stream, isA<PDFStreamObject>());
+
+      stream as PDFStreamObject;
+      expect(stream.dictionary.entries, {
+        const PDFName('Length'): const PDFNumber(3),
+      });
+      expect(stream.length, 3);
+      expect(stream.offset, 21);
+      final raw = await stream.readRaw();
+      expect(raw, [97, 98, 99]);
+    });
+    test('Test startxref keyword having trailing whitespace', () async {
+      final stream =
+          await createParserFromString('<</Length 3>>startxref \nabcendstream')
+              .parse();
+      expect(stream, isA<PDFDictionary>());
+
+      stream as PDFDictionary;
+      expect(stream.entries, {
+        const PDFName('Length'): const PDFNumber(3),
+      });
+    });
   });
 }
