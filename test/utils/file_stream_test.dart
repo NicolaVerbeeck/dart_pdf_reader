@@ -1,10 +1,10 @@
 import 'dart:io';
 
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';
-import 'package:dcli/dcli.dart';
 import 'package:test/scaffolding.dart';
 
 import 'stream_test.dart';
+import 'test_utils.dart';
 
 void main() {
   group('FileStream tests', () {
@@ -13,8 +13,7 @@ void main() {
     late FileStream stream;
 
     setUpAll(() async {
-      final fileName = createTempFile(suffix: '.dat');
-      testFile = File(fileName);
+      testFile = await createTempFile(suffix: '.dat');
       await testFile.writeAsBytes([1, 2, 3]);
     });
 
