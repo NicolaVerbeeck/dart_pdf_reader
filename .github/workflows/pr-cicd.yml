@@ -30,8 +30,13 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: dart-lang/setup-dart@fedb1266e91cf51be2fdb382869461a434b920a3 # v1.6.2
         with:
           sdk: stable
       - name: Install dependencies
@@ -41,27 +46,32 @@ jobs:
     timeout-minutes: 5
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: dart-lang/setup-dart@v1
+      - name: Harden Runner
+        uses: step-security/harden-runner@63c24ba6bd7ba022e95695ff85de572c04a18142 # v2.7.0
+        with:
+          egress-policy: audit
+
+      - uses: actions/checkout@f43a0e5ff2bd294095638e18286ca9a3d1956744 # v3.6.0
+      - uses: dart-lang/setup-dart@fedb1266e91cf51be2fdb382869461a434b920a3 # v1.6.2
         with:
           sdk: stable
       - name: Install dependencies
         run: dart pub get
       - name: Install coverage
         run: dart pub global activate coverage
-      - uses: stelynx/dart-full-coverage@v1.1.1
+      - uses: stelynx/dart-full-coverage@fc91fc4cf52e65867c0ad0e54390d0fd4e22f7d8 # v1.1.1
         with:
           package: dart_pdf_reader
       - run: dart test --no-color test --file-reporter "json:unit.test.json" --coverage="coverage"
       - name: Convert coverage
         run: $HOME/.pub-cache/bin/format_coverage --lcov --in=coverage --out=coverage.lcov --report-on=lib --check-ignore
       - name: Upload coverage reports to Codecov
-        uses: codecov/codecov-action@v3
+        uses: codecov/codecov-action@ab904c41d6ece82784817410c45d8b8c02684457 # v3.1.6
         with:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Test Report
         if: always()
-        uses: dorny/test-reporter@v1
+        uses: dorny/test-reporter@a923ed8851f90a1509b334ca82bd1c5c13a02bb2 # v1
         with:
           name: Unit Tests
           path: unit.test.json
