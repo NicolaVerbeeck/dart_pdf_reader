@@ -1,3 +1,10 @@
+## 1.0.0
+
+- Graduating to a first major release
+- Fixed issue in RunLengthDecode filter where it would not advance the data pointer correctly (off-by-one error)
+- Integrate build pipeline with openssf and step-security
+- Mature repo
+
 ## 0.5.1
 
 - Fix parsing PDFs where stream or startxref ends with extra whitespace (#50)
