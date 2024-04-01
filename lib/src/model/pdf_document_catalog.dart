@@ -100,7 +100,7 @@ class PDFDocumentCatalog {
     final firstRef =
         await resolver.resolve<PDFDictionary>(dictionary[PDFNames.first]);
 
-    PDFDictionary? currentOutline = firstRef;
+    var currentOutline = firstRef;
 
     final outlines = <PDFOutlineItem>[];
 

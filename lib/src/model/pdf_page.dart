@@ -30,7 +30,7 @@ class PDFPages {
     }
     final count = node.length;
     if (pageNum <= encountered + count) {
-      for (final PDFPageNode kid in node._children) {
+      for (final kid in node._children) {
         if (kid is PDFPageTreeNode) {
           final kidCount = kid.length;
           if (pageNum <= encountered + kidCount) {

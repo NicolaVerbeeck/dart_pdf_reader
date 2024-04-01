@@ -11,16 +11,16 @@ class ASCIIHexDecodeFilter extends StreamFilter {
   ) {
     final out = ByteOutputStream(bytes.length ~/ 2);
     var first = true;
-    int n1 = 0;
+    var n1 = 0;
     for (var k = 0; k < bytes.length; ++k) {
-      int ch = bytes[k] & 0xff;
+      final ch = bytes[k] & 0xff;
       if (ch == 0x3E) {
         break;
       }
       if (_isWhitespace(ch)) {
         continue;
       }
-      int n = _getHex(ch);
+      final n = _getHex(ch);
       if (n == -1) {
         throw const ParseException(
             'Illegal character in ASCIIHexDecode stream');
