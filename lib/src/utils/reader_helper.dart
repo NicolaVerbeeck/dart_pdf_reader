@@ -51,9 +51,9 @@ abstract class ReaderHelper {
     final len = string.length;
     final out = Uint8List(len ~/ 2);
 
-    for (int i = 0; i < len; i += 2) {
-      int h = _hexToBin(string.codeUnitAt(i));
-      int l = _hexToBin(string.codeUnitAt(i + 1));
+    for (var i = 0; i < len; i += 2) {
+      final h = _hexToBin(string.codeUnitAt(i));
+      final l = _hexToBin(string.codeUnitAt(i + 1));
       if (h == -1 || l == -1) {
         throw ArgumentError(
             "contains illegal character for hexBinary: $string");

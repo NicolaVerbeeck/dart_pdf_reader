@@ -10,4 +10,5 @@ linter:
   rules:
     - unawaited_futures
     - prefer_const_constructors
-
+    - prefer_final_locals
+    - omit_local_variable_types

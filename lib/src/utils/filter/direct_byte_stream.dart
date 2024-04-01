@@ -17,7 +17,7 @@ class ByteInputStream {
     if (_position + length > _bytes.length) {
       throw Exception('End of stream');
     }
-    for (var i = 0; i < length; i++) {
+    for (var i = 0; i < length; ++i) {
       current[offset + i] = _bytes[_position++];
     }
   }

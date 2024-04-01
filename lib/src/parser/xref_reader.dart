@@ -240,18 +240,18 @@ class _XRefSubsectionReader {
     final parts = firstLine.split(' ');
     assert(parts.length == 2);
 
-    final int startIndex = int.parse(parts[0]);
-    final int numEntries = int.parse(parts[1]);
+    final startIndex = int.parse(parts[0]);
+    final numEntries = int.parse(parts[1]);
 
     final entries = <XRefEntry>[];
     final lineBytes = Uint8List(20);
-    int id = startIndex;
-    for (int i = 0; i < numEntries; i++) {
+    var id = startIndex;
+    for (var i = 0; i < numEntries; ++i) {
       await stream.readBuffer(20, lineBytes);
 
-      final int offset =
+      final offset =
           int.parse(String.fromCharCodes(lineBytes.getRange(0, 10)));
-      final int generation =
+      final generation =
           int.parse(String.fromCharCodes(lineBytes.getRange(11, 17)));
       final free = lineBytes[17] == 0x66;
 
