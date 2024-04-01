@@ -75,13 +75,13 @@ class IndirectObjectParser {
 
     final objectNumbers = List<int>.filled(n, 0);
     final addresses = List<int>.filled(n, 0);
-    for (int k = 0; k < n; ++k) {
+    for (var k = 0; k < n; ++k) {
       objectNumbers[k] = await ReaderHelper.readNumber(tokenStream);
       final address = await ReaderHelper.readNumber(tokenStream);
       addresses[k] = address + first;
     }
     PDFObject? returnObject;
-    for (int k = 0; k < n; ++k) {
+    for (var k = 0; k < n; ++k) {
       await internalStream.seek(addresses[k]);
       final object = await PDFObjectParser(internalStream, this).parse();
       if (objectNumbers[k] == entry.id) {

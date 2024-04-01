@@ -11,8 +11,8 @@ class RunLengthDecodeFilter extends StreamFilter {
   ) {
     final out = ByteOutputStream(bytes.length);
 
-    for (int i = 0; i < bytes.length; ++i) {
-      int n = bytes[i];
+    for (var i = 0; i < bytes.length; ++i) {
+      final n = bytes[i];
       if (n == 128) {
         break;
       }
@@ -20,9 +20,9 @@ class RunLengthDecodeFilter extends StreamFilter {
         final bytesToCopy = n + 1;
         out.writeAll(Uint8List.view(
             bytes.buffer, bytes.offsetInBytes + i + 1, bytesToCopy));
-        i += n;
+        i += bytesToCopy;
       } else {
-        i++;
+        ++i;
         for (var j = 0; j < 257 - (n & 0xFF); ++j) {
           out.write(bytes[i]);
         }

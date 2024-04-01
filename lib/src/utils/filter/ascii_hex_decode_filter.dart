@@ -12,7 +12,7 @@ class ASCIIHexDecodeFilter extends StreamFilter {
     final out = ByteOutputStream(bytes.length ~/ 2);
     var first = true;
     int n1 = 0;
-    for (int k = 0; k < bytes.length; ++k) {
+    for (var k = 0; k < bytes.length; ++k) {
       int ch = bytes[k] & 0xff;
       if (ch == 0x3E) {
         break;

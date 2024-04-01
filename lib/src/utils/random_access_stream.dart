@@ -42,7 +42,7 @@ abstract class RandomAccessStream {
   Future<String> readLine() async {
     final line = StringBuffer();
     while (true) {
-      var c = await readByte();
+      final c = await readByte();
       if (c == -1) {
         if (line.length == 0) {
           throw const EOFException();

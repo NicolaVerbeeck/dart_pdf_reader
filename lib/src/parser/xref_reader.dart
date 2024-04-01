@@ -246,7 +246,7 @@ class _XRefSubsectionReader {
     final entries = <XRefEntry>[];
     final lineBytes = Uint8List(20);
     int id = startIndex;
-    for (int i = 0; i < numEntries; i++) {
+    for (var i = 0; i < numEntries; ++i) {
       await stream.readBuffer(20, lineBytes);
 
       final int offset =

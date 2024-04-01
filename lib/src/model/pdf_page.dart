@@ -39,7 +39,7 @@ class PDFPages {
             encountered += kidCount;
           }
         } else {
-          encountered++;
+          ++encountered;
           if (encountered == pageNum) {
             return kid as PDFPageObjectNode;
           }

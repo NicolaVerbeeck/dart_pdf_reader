@@ -30,7 +30,7 @@ class PDFParser {
     final objectParser = IndirectObjectParser(_buffer, table);
 
     PDFDictionary? mainTrailer;
-    var first = true;
+    final first = true;
     while (true) {
       final trailer = (first && parsedXRefTrailer != null)
           ? parsedXRefTrailer

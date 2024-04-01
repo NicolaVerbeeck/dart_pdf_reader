@@ -32,9 +32,9 @@ class FlateDecodeFilter extends StreamFilter {
     if (predictorInt == 2) {
       if (bitsPerComponent == 8) {
         final numRows = bytes.length ~/ bytesPerRow;
-        for (int row = 0; row < numRows; row++) {
-          int rowStart = row * bytesPerRow;
-          for (int col = bytesPerPixel; col < bytesPerRow; col++) {
+        for (var row = 0; row < numRows; ++row) {
+          final rowStart = row * bytesPerRow;
+          for (var col = bytesPerPixel; col < bytesPerRow; ++col) {
             bytes[rowStart + col] = (bytes[rowStart + col] +
                     bytes[rowStart + col - bytesPerPixel]) &
                 0xFF;
@@ -63,20 +63,20 @@ class FlateDecodeFilter extends StreamFilter {
         case 0: // PNG_FILTER_NONE
           break;
         case 1: //PNG_FILTER_SUB
-          for (int i = bytesPerPixel; i < bytesPerRow; i++) {
+          for (var i = bytesPerPixel; i < bytesPerRow; ++i) {
             current[i] += current[i - bytesPerPixel];
           }
           break;
         case 2: //PNG_FILTER_UP
-          for (int i = 0; i < bytesPerRow; i++) {
+          for (var i = 0; i < bytesPerRow; ++i) {
             current[i] += prior[i];
           }
           break;
         case 3: //PNG_FILTER_AVERAGE
-          for (int i = 0; i < bytesPerPixel; i++) {
+          for (var i = 0; i < bytesPerPixel; ++i) {
             current[i] += (prior[i] ~/ 2) & 0xFF;
           }
-          for (int i = bytesPerPixel; i < bytesPerRow; i++) {
+          for (var i = bytesPerPixel; i < bytesPerRow; ++i) {
             current[i] +=
                 (((current[i - bytesPerPixel] & 0xff) + (prior[i] & 0xff)) ~/
                         2) &
@@ -84,21 +84,21 @@ class FlateDecodeFilter extends StreamFilter {
           }
           break;
         case 4: //PNG_FILTER_PAETH
-          for (int i = 0; i < bytesPerPixel; i++) {
+          for (var i = 0; i < bytesPerPixel; ++i) {
             current[i] += prior[i];
           }
 
-          for (int i = bytesPerPixel; i < bytesPerRow; i++) {
-            int a = current[i - bytesPerPixel] & 0xff;
-            int b = prior[i] & 0xff;
-            int c = prior[i - bytesPerPixel] & 0xff;
+          for (var i = bytesPerPixel; i < bytesPerRow; ++i) {
+            final a = current[i - bytesPerPixel] & 0xff;
+            final b = prior[i] & 0xff;
+            final c = prior[i - bytesPerPixel] & 0xff;
 
-            int p = a + b - c;
-            int pa = (p - a).abs();
-            int pb = (p - b).abs();
-            int pc = (p - c).abs();
+            final p = a + b - c;
+            final pa = (p - a).abs();
+            final pb = (p - b).abs();
+            final pc = (p - c).abs();
 
-            int ret;
+            final int ret;
 
             if (pa <= pb && pa <= pc) {
               ret = a;

@@ -85,7 +85,7 @@ class _LZWDecoder {
   }
 
   void _reInitializeStringTable() {
-    for (var i = 0; i < _stringTable.length; i++) {
+    for (var i = 0; i < _stringTable.length; ++i) {
       _stringTable[i] = i < 256 ? <int>[i] : [];
     }
     _tableIndex = 258;

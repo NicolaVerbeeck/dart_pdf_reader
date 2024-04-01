@@ -347,7 +347,7 @@ class PDFObjectParser {
   Future<CharCode> _parseOctal(CharCode firstDigit) async {
     final builder = StringBuffer();
     builder.writeCharCode(firstDigit);
-    for (var i = 0; i < 2; i++) {
+    for (var i = 0; i < 2; ++i) {
       final token = await _tokenStream.nextToken();
       if (!_isOctal(token)) {
         break;

@@ -13,7 +13,7 @@ class ASCII85DecodeFilter extends StreamFilter {
 
     int state = 0;
     final chn = Uint8List(5);
-    for (int k = 0; k < bytes.length; ++k) {
+    for (var k = 0; k < bytes.length; ++k) {
       int ch = bytes[k] & 0xff;
       if (ch == 0x7E) {
         break;
@@ -36,7 +36,7 @@ class ASCII85DecodeFilter extends StreamFilter {
       if (state == 5) {
         state = 0;
         int r = 0;
-        for (int j = 0; j < 5; ++j) {
+        for (var j = 0; j < 5; ++j) {
           r = r * 85 + chn[j];
         }
         out.write((r >> 24) & 0xFF);
