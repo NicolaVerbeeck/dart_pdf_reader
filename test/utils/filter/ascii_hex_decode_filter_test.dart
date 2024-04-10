@@ -41,6 +41,16 @@ void main() {
         final decodedString = utf8.decode(decoded);
         expect(decodedString, 'Lorem ipsum.');
       });
+
+      test('Decoding of odd stream data', () {
+        final decoded = StreamFilter(const PDFName('ASCIIHexDecode')).decode(
+          Uint8List.fromList(utf8.encode('7>')),
+          null,
+          const PDFDictionary({}),
+        );
+        final decodedString = utf8.decode(decoded);
+        expect(decodedString, 'p');
+      });
     });
   });
 }

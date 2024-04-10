@@ -29,6 +29,31 @@ void main() {
         );
         expect(decoded, [0, 0, 0, 0, 76, 111, 114, 101, 109]);
       });
+
+      test('Decoding single character', () {
+        final decoded = StreamFilter(const PDFName('ASCII85Decode')).decode(
+          Uint8List.fromList(utf8.encode('5l')),
+          null,
+          const PDFDictionary({}),
+        );
+        expect(decoded, utf8.encode('A'));
+      });
+      test('Decoding two characters', () {
+        final decoded = StreamFilter(const PDFName('ASCII85Decode')).decode(
+          Uint8List.fromList(utf8.encode('5sb')),
+          null,
+          const PDFDictionary({}),
+        );
+        expect(decoded, utf8.encode('AB'));
+      });
+      test('Decoding three characters', () {
+        final decoded = StreamFilter(const PDFName('ASCII85Decode')).decode(
+          Uint8List.fromList(utf8.encode('5sdp')),
+          null,
+          const PDFDictionary({}),
+        );
+        expect(decoded, utf8.encode('ABC'));
+      });
     });
   });
 }
