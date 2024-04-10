@@ -249,8 +249,7 @@ class _XRefSubsectionReader {
     for (var i = 0; i < numEntries; ++i) {
       await stream.readBuffer(20, lineBytes);
 
-      final offset =
-          int.parse(String.fromCharCodes(lineBytes.getRange(0, 10)));
+      final offset = int.parse(String.fromCharCodes(lineBytes.getRange(0, 10)));
       final generation =
           int.parse(String.fromCharCodes(lineBytes.getRange(11, 17)));
       final free = lineBytes[17] == 0x66;
