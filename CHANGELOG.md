@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Added funding to pubspec.yaml
+- Security hardening
+
 ## 1.0.0
 
 - Graduating to a first major release
@@ -12,7 +17,8 @@
 ## 0.5.0
 
 - Add support for web by using the archive package. (#48)
-- **Breaking**: EOFException and ParseException now no longer implement dart:io's IOException, just base Exception. (#48)
+- **Breaking**: EOFException and ParseException now no longer implement dart:io's IOException, just base Exception. (
+  #48)
 
 ## 0.4.3
 
