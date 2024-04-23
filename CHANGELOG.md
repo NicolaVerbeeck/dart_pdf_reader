@@ -1,3 +1,8 @@
+## 1.0.1
+
+- Added funding to pubspec.yaml
+- Security hardening
+
 ## 1.0.0
 
 - Graduating to a first major release
