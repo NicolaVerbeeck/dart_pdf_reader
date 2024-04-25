@@ -58,7 +58,7 @@ Future<PDFDictionary> parseTrailer(
 ) async {
   final line = await ReaderHelper.readWordTrimmed(buffer);
   if (line != 'trailer') {
-    throw Exception('Expected \'trailer\'');
+    throw Exception('Expected \'trailer\', got: $line');
   }
   return await PDFObjectParser(buffer, parser).parse() as PDFDictionary;
 }
