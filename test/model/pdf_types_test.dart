@@ -14,47 +14,47 @@ void main() {
   group('PDF Types tests', () {
     group('PDFNUmber tests', () {
       test('Test clone PDFNumber int', () {
-        final pdfNumber = const PDFNumber(1);
+        const pdfNumber = PDFNumber(1);
         final pdfNumberClone = pdfNumber.clone();
         expect(pdfNumberClone, isNotNull);
         expect(pdfNumberClone, isNot(same(pdfNumber)));
         expect(pdfNumberClone, equals(pdfNumber));
       });
       test('Test clone PDFNUmber double', () {
-        final pdfNumber = const PDFNumber(1.0);
+        const pdfNumber = PDFNumber(1.0);
         final pdfNumberClone = pdfNumber.clone();
         expect(pdfNumberClone, isNotNull);
         expect(pdfNumberClone, isNot(same(pdfNumber)));
         expect(pdfNumberClone, equals(pdfNumber));
       });
       test('Test toString truncates double to int', () {
-        final pdfNumber = const PDFNumber(12.000000000002);
+        const pdfNumber = PDFNumber(12.000000000002);
         expect(pdfNumber.toString(), equals('12'));
       });
       test('Test toString does not truncate double to int', () {
-        final pdfNumber = const PDFNumber(12.002);
+        const pdfNumber = PDFNumber(12.002);
         expect(pdfNumber.toString(), equals('12.002'));
-        final pdfNumber2 = const PDFNumber(12.0000000002);
+        const pdfNumber2 = PDFNumber(12.0000000002);
         expect(pdfNumber2.toString(), equals('12.0000000002'));
       });
       test('Test toString truncates to int because of trailing zero', () {
-        final pdfNumber = const PDFNumber(12.00000000002);
+        const pdfNumber = PDFNumber(12.00000000002);
         expect(pdfNumber.toString(), equals('12'));
       });
       test('Test toInt with int', () {
-        final pdfNumber = const PDFNumber(12);
+        const pdfNumber = PDFNumber(12);
         expect(pdfNumber.toInt(), equals(12));
       });
       test('Test toInt with double', () {
-        final pdfNumber = const PDFNumber(12.0);
+        const pdfNumber = PDFNumber(12.0);
         expect(pdfNumber.toInt(), equals(12));
       });
       test('Test toDouble with int', () {
-        final pdfNumber = const PDFNumber(12);
+        const pdfNumber = PDFNumber(12);
         expect(pdfNumber.toDouble(), equals(12.0));
       });
       test('Test toDouble with double', () {
-        final pdfNumber = const PDFNumber(12.2);
+        const pdfNumber = PDFNumber(12.2);
         expect(pdfNumber.toDouble(), equals(12.2));
       });
     });
@@ -183,13 +183,14 @@ void main() {
         expect(const PDFName('Test').value, 'Test');
       });
       test('Test equality', () {
-        final name1 = '123';
-        final name2 = '123';
-        final name3 = '321';
-        expect(PDFName(name1), PDFName(name2));
-        expect(PDFName(name1).hashCode, PDFName(name2).hashCode);
-        expect(PDFName(name1).hashCode == PDFName(name3).hashCode, false);
-        expect(PDFName(name1) == PDFName(name3), false);
+        const name1 = '123';
+        const name2 = '123';
+        const name3 = '321';
+        expect(const PDFName(name1), const PDFName(name2));
+        expect(const PDFName(name1).hashCode, const PDFName(name2).hashCode);
+        expect(const PDFName(name1).hashCode == const PDFName(name3).hashCode,
+            false);
+        expect(const PDFName(name1) == const PDFName(name3), false);
       });
     });
     group('PDFArray tests', () {
@@ -213,15 +214,17 @@ void main() {
         expect(() => arr.length = 4, throwsArgumentError);
       });
       test('Test equality is deep', () {
-        final val1 = const PDFNumber(1);
-        final val2 = const PDFNumber(2);
-        final val3 = const PDFNumber(3);
-        expect(PDFArray([val1, val2]), PDFArray([val1, val2]));
-        expect(PDFArray([val1, val2]) == PDFArray([val1, val3]), false);
+        const val1 = PDFNumber(1);
+        const val2 = PDFNumber(2);
+        const val3 = PDFNumber(3);
+        expect(const PDFArray([val1, val2]), const PDFArray([val1, val2]));
+        expect(const PDFArray([val1, val2]) == const PDFArray([val1, val3]),
+            false);
+        expect(const PDFArray([val1, val2]).hashCode,
+            const PDFArray([val1, val2]).hashCode);
         expect(
-            PDFArray([val1, val2]).hashCode, PDFArray([val1, val2]).hashCode);
-        expect(
-            PDFArray([val1, val2]).hashCode == PDFArray([val1, val3]).hashCode,
+            const PDFArray([val1, val2]).hashCode ==
+                const PDFArray([val1, val3]).hashCode,
             false);
       });
     });
@@ -265,27 +268,24 @@ void main() {
     });
     group('PDFObjectReference tests', () {
       test('Test create reference', () {
-        final ref = const PDFObjectReference(objectId: 123);
-        final ref2 =
-            const PDFObjectReference(objectId: 123, generationNumber: 1);
+        const ref = PDFObjectReference(objectId: 123);
+        const ref2 = PDFObjectReference(objectId: 123, generationNumber: 1);
         expect(ref.objectId, 123);
         expect(ref.generationNumber, 0);
         expect(ref2.objectId, 123);
         expect(ref2.generationNumber, 1);
       });
       test('Test toString', () {
-        final ref = const PDFObjectReference(objectId: 123);
-        final ref2 =
-            const PDFObjectReference(objectId: 123, generationNumber: 1);
+        const ref = PDFObjectReference(objectId: 123);
+        const ref2 = PDFObjectReference(objectId: 123, generationNumber: 1);
 
         expect(ref.toString(), '123 0 R');
         expect(ref2.toString(), '123 1 R');
       });
       test('Test equality', () {
-        final ref = const PDFObjectReference(objectId: 123);
-        final ref2 = const PDFObjectReference(objectId: 123);
-        final ref3 =
-            const PDFObjectReference(objectId: 123, generationNumber: 1);
+        const ref = PDFObjectReference(objectId: 123);
+        const ref2 = PDFObjectReference(objectId: 123);
+        const ref3 = PDFObjectReference(objectId: 123, generationNumber: 1);
         expect(ref, ref2);
         expect(ref == ref3, false);
         expect(ref.hashCode, ref2.hashCode);
@@ -312,7 +312,7 @@ void main() {
     });
     group('PDFStreamObject tests', () {
       test('Test create stream offset 0', () async {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final stream = PDFStreamObject(
           dictionary: dict,
           length: 5,
@@ -324,7 +324,7 @@ void main() {
         expect(await stream.readRaw(), [1, 2, 3, 4, 5]);
       });
       test('Test create stream offset 0', () async {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final stream = PDFStreamObject(
           dictionary: dict,
           length: 4,
@@ -336,7 +336,7 @@ void main() {
         expect(await stream.readRaw(), [2, 3, 4, 5]);
       });
       test('Test read without filters', () async {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final stream = PDFStreamObject(
           dictionary: dict,
           length: 5,
@@ -352,7 +352,7 @@ void main() {
         expect(await stream.read(mockResolver), [1, 2, 3, 4, 5]);
       });
       test('Test read with single filter', () async {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final bytes = File('test/resources/ASCIIHex.bin').readAsBytesSync();
         final stream = PDFStreamObject(
           dictionary: dict,
@@ -371,7 +371,7 @@ void main() {
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac malesuada tellus. Quisque a arcu semper, tristique nibh eu, convallis lacus. Donec neque justo, condimentum sed molestie ac, mollis eu nibh. Vivamus pellentesque condimentum fringilla. Nullam euismod ac risus a semper. Etiam hendrerit scelerisque sapien tristique varius.');
       });
       test('Test read with bad filter', () async {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final bytes = File('test/resources/ASCIIHex.bin').readAsBytesSync();
         final stream = PDFStreamObject(
           dictionary: dict,
@@ -389,7 +389,7 @@ void main() {
         expect(() => stream.read(mockResolver), throwsA(isA<ParseException>()));
       });
       test('Test read with array filter', () async {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final bytes = File('test/resources/ASCIIHex.bin').readAsBytesSync();
         final stream = PDFStreamObject(
           dictionary: dict,
@@ -408,7 +408,7 @@ void main() {
             'Lorem ipsum dolor sit amet, consectetur adipiscing elit. Donec ac malesuada tellus. Quisque a arcu semper, tristique nibh eu, convallis lacus. Donec neque justo, condimentum sed molestie ac, mollis eu nibh. Vivamus pellentesque condimentum fringilla. Nullam euismod ac risus a semper. Etiam hendrerit scelerisque sapien tristique varius.');
       });
       test('Test equality', () {
-        final dict = const PDFDictionary({});
+        const dict = PDFDictionary({});
         final source = ByteStream(Uint8List.fromList([1, 2, 3, 4, 5]));
         final stream = PDFStreamObject(
           dictionary: dict,

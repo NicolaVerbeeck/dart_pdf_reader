@@ -1,7 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
-import 'package:dart_pdf_reader/src/parser/token_stream.dart';
+import '../../dart_pdf_reader.dart';
+import '../parser/token_stream.dart';
 
 abstract class ReaderHelper {
   /// Try to read the first non-empty line from the buffer, stripping comments

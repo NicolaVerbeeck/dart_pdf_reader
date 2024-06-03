@@ -1,6 +1,7 @@
 import 'dart:io';
 
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import 'package:dart_pdf_reader/src/utils/cache/buffered_random_access_stream.dart';
+import 'package:dart_pdf_reader/src/utils/file_stream.dart';
 import 'package:test/scaffolding.dart';
 
 import 'stream_test.dart';

@@ -1,8 +1,8 @@
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
-import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
-import 'package:dart_pdf_reader/src/parser/token_stream.dart';
-import 'package:dart_pdf_reader/src/utils/list_extensions.dart';
-import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
+import '../../dart_pdf_reader.dart';
+import 'indirect_object_parser.dart';
+import 'token_stream.dart';
+import '../utils/list_extensions.dart';
+import '../utils/reader_helper.dart';
 
 class PDFObjectParser {
   final RandomAccessStream _buffer;

@@ -16,7 +16,7 @@ void main() {
           const PDFDictionary({}),
         );
         final decodedString = utf8.decode(decoded);
-        final expected = '-----A---B';
+        const expected = '-----A---B';
         expect(decodedString, expected);
       });
     });

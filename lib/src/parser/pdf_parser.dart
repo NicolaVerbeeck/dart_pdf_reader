@@ -1,13 +1,13 @@
-import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/model/pdf_document.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
-import 'package:dart_pdf_reader/src/parser/pdf_object_parser.dart';
-import 'package:dart_pdf_reader/src/parser/xref_reader.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
-import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
+import '../model/indirect_object_table.dart';
+import '../model/pdf_constants.dart';
+import '../model/pdf_document.dart';
+import '../model/pdf_types.dart';
+import 'indirect_object_parser.dart';
+import 'object_resolver.dart';
+import 'pdf_object_parser.dart';
+import 'xref_reader.dart';
+import '../utils/random_access_stream.dart';
+import '../utils/reader_helper.dart';
 import 'package:meta/meta.dart';
 
 /// Parses a PDF document from a [RandomAccessStream].
@@ -30,11 +30,12 @@ class PDFParser {
     final objectParser = IndirectObjectParser(_buffer, table);
 
     PDFDictionary? mainTrailer;
-    final first = true;
+    var first = true;
     while (true) {
       final trailer = (first && parsedXRefTrailer != null)
           ? parsedXRefTrailer
           : await parseTrailer(objectParser, _buffer);
+      first = false;
       mainTrailer ??= trailer;
       final prev = trailer[PDFNames.prev] as PDFNumber?;
       if (prev == null) break;

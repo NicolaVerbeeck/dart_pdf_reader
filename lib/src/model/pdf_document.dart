@@ -1,7 +1,7 @@
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/model/pdf_document_catalog.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
+import 'pdf_constants.dart';
+import 'pdf_document_catalog.dart';
+import 'pdf_types.dart';
+import '../parser/object_resolver.dart';
 
 /// Holds the data for the PDF document.
 class PDFDocument {

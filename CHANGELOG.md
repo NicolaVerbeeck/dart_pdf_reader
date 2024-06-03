@@ -1,3 +1,9 @@
+## 2.0.0
+
+- Add web support
+- Support badly formatted PDFs that have only 19 byte long xref sections
+- **Breaking** FileStream has moved to dart_pdf_reader_io library
+
 ## 1.0.1
 
 - Added funding to pubspec.yaml
@@ -17,7 +23,8 @@
 ## 0.5.0
 
 - Add support for web by using the archive package. (#48)
-- **Breaking**: EOFException and ParseException now no longer implement dart:io's IOException, just base Exception. (#48)
+- **Breaking**: EOFException and ParseException now no longer implement dart:io's IOException, just base Exception. (
+  #48)
 
 ## 0.4.3
 

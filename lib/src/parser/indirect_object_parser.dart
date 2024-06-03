@@ -1,14 +1,14 @@
-import 'package:dart_pdf_reader/src/error/exceptions.dart';
-import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
-import 'package:dart_pdf_reader/src/parser/pdf_object_parser.dart';
-import 'package:dart_pdf_reader/src/parser/token_stream.dart';
-import 'package:dart_pdf_reader/src/parser/xref_reader.dart';
-import 'package:dart_pdf_reader/src/utils/byte_stream.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
-import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
+import '../error/exceptions.dart';
+import '../model/indirect_object_table.dart';
+import '../model/pdf_constants.dart';
+import '../model/pdf_types.dart';
+import 'object_resolver.dart';
+import 'pdf_object_parser.dart';
+import 'token_stream.dart';
+import 'xref_reader.dart';
+import '../utils/byte_stream.dart';
+import '../utils/random_access_stream.dart';
+import '../utils/reader_helper.dart';
 
 class IndirectObjectParser {
   final RandomAccessStream _buffer;

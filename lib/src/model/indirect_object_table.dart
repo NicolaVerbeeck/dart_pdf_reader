@@ -1,5 +1,5 @@
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/xref_reader.dart';
+import 'pdf_types.dart';
+import '../parser/xref_reader.dart';
 
 class IndirectObjectTable {
   final XRefTable _xrefTable;

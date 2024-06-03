@@ -1,4 +1,4 @@
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
+import '../utils/random_access_stream.dart';
 
 typedef CharCode = int;
 
