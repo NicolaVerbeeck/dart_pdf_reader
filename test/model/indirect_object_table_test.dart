@@ -13,7 +13,7 @@ void main() {
     test('Test add object', () {
       final xrefTable = _MockXRefTable();
       final sut = IndirectObjectTable(xrefTable);
-      final obj = const PDFIndirectObject(
+      const obj = PDFIndirectObject(
           objectId: 0, generationNumber: 0, object: PDFNumber(1337));
       expect(sut[0], isNull);
       sut.put(0, obj);
@@ -23,10 +23,10 @@ void main() {
     test('Test resolve object reference', () {
       final xrefTable = _MockXRefTable();
       final sut = IndirectObjectTable(xrefTable);
-      final obj = const PDFObjectReference(objectId: 1, generationNumber: 0);
+      const obj = PDFObjectReference(objectId: 1, generationNumber: 0);
       expect(sut.resolve<PDFNumber>(obj), null);
 
-      final newObj = const PDFIndirectObject(
+      const newObj = PDFIndirectObject(
           objectId: 1, generationNumber: 0, object: PDFNumber(1337));
       sut.put(1, newObj);
       expect(sut.resolve<PDFNumber>(obj), newObj.object);
@@ -35,7 +35,7 @@ void main() {
     test('Test resolve direct object', () {
       final xrefTable = _MockXRefTable();
       final sut = IndirectObjectTable(xrefTable);
-      final obj = const PDFNumber(1337);
+      const obj = PDFNumber(1337);
       expect(sut.resolve<PDFNumber>(obj), obj);
     });
 

@@ -1,9 +1,9 @@
 import 'dart:typed_data';
 
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
-import 'package:dart_pdf_reader/src/utils/filter/direct_byte_stream.dart';
+import '../../../dart_pdf_reader.dart';
+import 'direct_byte_stream.dart';
 import 'package:archive/archive.dart';
-import 'package:dart_pdf_reader/src/utils/list_extensions.dart';
+import '../list_extensions.dart';
 
 part 'ascii_85_decode_filter.dart';
 part 'ascii_hex_decode_filter.dart';

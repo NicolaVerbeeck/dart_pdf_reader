@@ -1,6 +1,6 @@
-import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
+import '../model/indirect_object_table.dart';
+import '../model/pdf_types.dart';
+import 'indirect_object_parser.dart';
 
 class ObjectResolver {
   final IndirectObjectParser _indirectObjectParser;

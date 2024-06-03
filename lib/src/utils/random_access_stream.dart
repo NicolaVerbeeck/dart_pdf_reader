@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import 'package:dart_pdf_reader/src/error/exceptions.dart';
+import '../error/exceptions.dart';
 
 /// An abstraction of a stream of bytes that can be read from.
 abstract class RandomAccessStream {

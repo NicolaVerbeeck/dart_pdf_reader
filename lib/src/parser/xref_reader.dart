@@ -1,17 +1,17 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:dart_pdf_reader/src/error/exceptions.dart';
-import 'package:dart_pdf_reader/src/model/indirect_object_table.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/indirect_object_parser.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
-import 'package:dart_pdf_reader/src/parser/pdf_object_parser.dart';
-import 'package:dart_pdf_reader/src/parser/token_stream.dart';
-import 'package:dart_pdf_reader/src/utils/filter/direct_byte_stream.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
-import 'package:dart_pdf_reader/src/utils/reader_helper.dart';
+import '../error/exceptions.dart';
+import '../model/indirect_object_table.dart';
+import '../model/pdf_constants.dart';
+import '../model/pdf_types.dart';
+import 'indirect_object_parser.dart';
+import 'object_resolver.dart';
+import 'pdf_object_parser.dart';
+import 'token_stream.dart';
+import '../utils/filter/direct_byte_stream.dart';
+import '../utils/random_access_stream.dart';
+import '../utils/reader_helper.dart';
 import 'package:meta/meta.dart';
 
 @immutable
@@ -244,10 +244,22 @@ class _XRefSubsectionReader {
     final numEntries = int.parse(parts[1]);
 
     final entries = <XRefEntry>[];
-    final lineBytes = Uint8List(20);
+    var readSize = 20;
+    final lineBytes = Uint8List(readSize);
     var id = startIndex;
     for (var i = 0; i < numEntries; ++i) {
-      await stream.readBuffer(20, lineBytes);
+      await stream.readBuffer(readSize, lineBytes);
+
+      if (i == 0) {
+        final last = lineBytes.last;
+        if (last >= 0x30 && last <= 0x39) {
+          // Some lines 19 bytes long even though that is not the standard
+          // To support this, start using 19 by tes and step 1 back
+          await stream.seek((await stream.position) - 1);
+          // Read 19 bytes from now on
+          readSize = 19;
+        }
+      }
 
       final offset = int.parse(String.fromCharCodes(lineBytes.getRange(0, 10)));
       final generation =

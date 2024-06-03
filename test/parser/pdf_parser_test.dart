@@ -11,18 +11,22 @@ import 'package:test/test.dart';
 
 void main() {
   group('PDFParser tests', () {
-    group('Parse document',() {
+    group('Parse document', () {
       test('it supports single main xref', () async {
-        final stream = ByteStream(Uint8List.fromList(utf8.encode('xref\n0 1\n0000000000 65535 f\r\ntrailer\n<< /Size 1 /Root 1 0 R >>\nstartxref\n0\n%%EOF')));
+        final stream = ByteStream(Uint8List.fromList(utf8.encode(
+            'xref\n0 1\n0000000000 65535 f\r\ntrailer\n<< /Size 1 /Root 1 0 R >>\nstartxref\n0\n%%EOF')));
 
         final parser = PDFParser(stream);
 
         final document = await parser.parse();
 
-        expect(document.mainTrailer, PDFDictionary({
-          const PDFName('Size'): const PDFNumber(1),
-          const PDFName('Root'): const PDFObjectReference(objectId: 1, generationNumber: 0),
-        }));
+        expect(
+            document.mainTrailer,
+            PDFDictionary({
+              const PDFName('Size'): const PDFNumber(1),
+              const PDFName('Root'):
+                  const PDFObjectReference(objectId: 1, generationNumber: 0),
+            }));
       });
     });
 

@@ -1,3 +1,5 @@
+// ignore_for_file: avoid_print
+
 import 'dart:io';
 
 import 'package:dart_pdf_reader/dart_pdf_reader.dart';

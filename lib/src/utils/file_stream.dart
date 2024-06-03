@@ -1,7 +1,7 @@
 import 'dart:io';
 import 'dart:typed_data';
 
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
+import 'random_access_stream.dart';
 
 /// Implementation of [RandomAccessStream] which reads from a file
 /// Currently this does not perform smart buffering and can be quite slow

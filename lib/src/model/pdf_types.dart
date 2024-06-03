@@ -4,11 +4,11 @@ import 'dart:typed_data';
 
 import 'package:charset/charset.dart';
 import 'package:collection/collection.dart';
-import 'package:dart_pdf_reader/src/error/exceptions.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
-import 'package:dart_pdf_reader/src/utils/filter/stream_filter.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
+import '../error/exceptions.dart';
+import 'pdf_constants.dart';
+import '../parser/object_resolver.dart';
+import '../utils/filter/stream_filter.dart';
+import '../utils/random_access_stream.dart';
 import 'package:meta/meta.dart';
 
 /// Base class for all PDF objects.

@@ -1,9 +1,9 @@
 import 'dart:math';
 import 'dart:typed_data';
 
-import 'package:dart_pdf_reader/src/utils/byte_stream.dart';
-import 'package:dart_pdf_reader/src/utils/cache/lru_map.dart';
-import 'package:dart_pdf_reader/src/utils/random_access_stream.dart';
+import '../byte_stream.dart';
+import '../random_access_stream.dart';
+import 'lru_map.dart';
 
 /// Implementation of [RandomAccessStream] which buffers reads from another stream
 /// This is useful for improving performance when reading from a slow stream
@@ -30,11 +30,15 @@ class BufferedRandomAccessStream extends RandomAccessStream {
     int maxNumBlocks = 10,
   })  : _blockSize = blockSize,
         _cache = LRUMap(maxNumBlocks) {
-    if (_stream is ByteStream) {
-      print(
-        'Warning: BufferedRandomAccessStream is not recommended for ByteStream',
-      );
-    }
+    assert(() {
+      if (_stream is ByteStream) {
+        // ignore: avoid_print
+        print(
+          'Warning: BufferedRandomAccessStream is not recommended for ByteStream',
+        );
+      }
+      return true;
+    }());
   }
 
   @override

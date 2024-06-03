@@ -27,11 +27,11 @@ void main() {
       expect(await objectResolver.resolve(null), isNull);
     });
     test('Test resolve regular object', () async {
-      final object = const PDFNumber(-98.1827);
+      const object = PDFNumber(-98.1827);
       expect(await objectResolver.resolve(object), const PDFNumber(-98.1827));
     });
     test('Test resolve indirect object', () async {
-      final indirectObject = const PDFIndirectObject(
+      const indirectObject = PDFIndirectObject(
         object: PDFNumber(-98.1827),
         generationNumber: 0,
         objectId: 1,
@@ -40,7 +40,7 @@ void main() {
           const PDFNumber(-98.1827));
     });
     test('Test resolve indirect object twice', () async {
-      final indirectObject = const PDFIndirectObject(
+      const indirectObject = PDFIndirectObject(
         object: PDFIndirectObject(
           object: PDFNumber(-98.1827),
           generationNumber: 0,

@@ -1,10 +1,10 @@
 import 'dart:math';
 
-import 'package:dart_pdf_reader/src/error/exceptions.dart';
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/model/pdf_document.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
+import '../error/exceptions.dart';
+import 'pdf_constants.dart';
+import 'pdf_document.dart';
+import 'pdf_types.dart';
+import '../parser/object_resolver.dart';
 
 /// Pages tree root of the document
 class PDFPages {

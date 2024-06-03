@@ -1,4 +1,4 @@
-import 'package:dart_pdf_reader/dart_pdf_reader.dart';
+import '../../dart_pdf_reader.dart';
 import 'package:meta/meta.dart';
 
 /// Action types for pdf outlines

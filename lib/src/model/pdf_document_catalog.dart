@@ -1,9 +1,9 @@
-import 'package:dart_pdf_reader/src/model/pdf_constants.dart';
-import 'package:dart_pdf_reader/src/model/pdf_document.dart';
-import 'package:dart_pdf_reader/src/model/pdf_outline.dart';
-import 'package:dart_pdf_reader/src/model/pdf_page.dart';
-import 'package:dart_pdf_reader/src/model/pdf_types.dart';
-import 'package:dart_pdf_reader/src/parser/object_resolver.dart';
+import 'pdf_constants.dart';
+import 'pdf_document.dart';
+import 'pdf_outline.dart';
+import 'pdf_page.dart';
+import 'pdf_types.dart';
+import '../parser/object_resolver.dart';
 
 /// The document catalog describing the document
 class PDFDocumentCatalog {
