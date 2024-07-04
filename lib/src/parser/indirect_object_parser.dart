@@ -2,13 +2,13 @@ import '../error/exceptions.dart';
 import '../model/indirect_object_table.dart';
 import '../model/pdf_constants.dart';
 import '../model/pdf_types.dart';
+import '../utils/byte_stream.dart';
+import '../utils/random_access_stream.dart';
+import '../utils/reader_helper.dart';
 import 'object_resolver.dart';
 import 'pdf_object_parser.dart';
 import 'token_stream.dart';
 import 'xref_reader.dart';
-import '../utils/byte_stream.dart';
-import '../utils/random_access_stream.dart';
-import '../utils/reader_helper.dart';
 
 class IndirectObjectParser {
   final RandomAccessStream _buffer;
@@ -31,7 +31,10 @@ class IndirectObjectParser {
     return readObjectAt(entry);
   }
 
-  Future<PDFIndirectObject> readObjectAt(XRefEntry entry) async {
+  Future<PDFIndirectObject> readObjectAt(
+    XRefEntry entry, {
+    bool memoryCache = true,
+  }) async {
     final previousPosition = await _buffer.position;
     if (entry.compressedObjectStreamId != null) {
       return _readFromCompressedStream(entry);
@@ -48,7 +51,9 @@ class IndirectObjectParser {
       generationNumber: entry.generation,
       objectId: entry.id,
     );
-    _objectTable.put(entry.id, reference);
+    if (memoryCache) {
+      _objectTable.put(entry.id, reference);
+    }
     return reference;
   }
 

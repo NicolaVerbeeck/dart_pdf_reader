@@ -1,3 +1,7 @@
+## 2.0.1
+
+- Add hint to prevent caching objects in memory
+
 ## 2.0.0
 
 - Add web support
