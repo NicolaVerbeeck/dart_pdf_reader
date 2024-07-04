@@ -1,14 +1,15 @@
+import 'package:meta/meta.dart';
+
 import '../model/indirect_object_table.dart';
 import '../model/pdf_constants.dart';
 import '../model/pdf_document.dart';
 import '../model/pdf_types.dart';
+import '../utils/random_access_stream.dart';
+import '../utils/reader_helper.dart';
 import 'indirect_object_parser.dart';
 import 'object_resolver.dart';
 import 'pdf_object_parser.dart';
 import 'xref_reader.dart';
-import '../utils/random_access_stream.dart';
-import '../utils/reader_helper.dart';
-import 'package:meta/meta.dart';
 
 /// Parses a PDF document from a [RandomAccessStream].
 class PDFParser {
@@ -24,7 +25,8 @@ class PDFParser {
   /// The document is lazily parsed, only the absolute minimum is parsed, other
   /// items are parsed on demand. This means closing the stream will break
   /// reading items in the returned [PDFDocument].
-  Future<PDFDocument> parse() async {
+  /// Setting [cacheObjectsHint] to `true` will cache resolved objects in memory
+  Future<PDFDocument> parse({bool cacheObjectsHint = true}) async {
     final (mainXRef, parsedXRefTrailer) = await XRefReader(_buffer).parseXRef();
     final table = IndirectObjectTable(mainXRef);
     final objectParser = IndirectObjectParser(_buffer, table);
@@ -46,7 +48,11 @@ class PDFParser {
 
     return PDFDocument(
       mainTrailer: mainTrailer,
-      objectResolver: ObjectResolver(objectParser, table),
+      objectResolver: ObjectResolver(
+        objectParser,
+        table,
+        cacheResolvedObjects: cacheObjectsHint,
+      ),
     );
   }
 }
