@@ -1,3 +1,7 @@
+## 2.1.0
+
+- **!POTENTIALLY BREAKING!** Use delta when comparing numbers for equality. Fixes #143 
+
 ## 2.0.1
 
 - Add hint to prevent caching objects in memory

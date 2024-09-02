@@ -4,12 +4,13 @@ import 'dart:typed_data';
 
 import 'package:charset/charset.dart';
 import 'package:collection/collection.dart';
+import 'package:meta/meta.dart';
+
 import '../error/exceptions.dart';
-import 'pdf_constants.dart';
 import '../parser/object_resolver.dart';
 import '../utils/filter/stream_filter.dart';
 import '../utils/random_access_stream.dart';
-import 'package:meta/meta.dart';
+import 'pdf_constants.dart';
 
 /// Base class for all PDF objects.
 abstract class PDFObject {
@@ -23,6 +24,7 @@ class PDFNumber extends PDFObject {
   static const int _printPrecision = 10;
 
   /// The epsilon used when determining if a number is close enough to an integer
+  /// Also used to compare two numbers for equality.
   /// See [_truncate].
   static const double _epsilon = 0.00000000001;
 
@@ -65,7 +67,8 @@ class PDFNumber extends PDFObject {
 
   @override
   bool operator ==(Object other) =>
-      identical(this, other) || other is PDFNumber && _value == other._value;
+      identical(this, other) ||
+      other is PDFNumber && (_value - other._value).abs() < _epsilon;
 
   @override
   int get hashCode => _value.hashCode;
