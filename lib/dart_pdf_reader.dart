@@ -1,4 +1,4 @@
-library dart_pdf_reader;
+library;
 
 export 'src/error/exceptions.dart';
 export 'src/model/pdf_constants.dart';
