@@ -9,7 +9,7 @@ environment:
   sdk: '>=3.0.0 <4.0.0'
 
 dependencies:
-  archive: ^3.4.9
+  archive: ">=3.4.9 <5.0.0"
   charset: ^2.0.1
   collection: '>=1.17.0 < 2.0.0'
   meta: '>=1.9.1 < 2.0.0'
