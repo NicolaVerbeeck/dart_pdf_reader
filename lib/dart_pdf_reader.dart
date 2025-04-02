@@ -15,3 +15,4 @@ export 'src/utils/byte_stream.dart';
 export 'src/utils/cache/buffered_random_access_stream.dart';
 export 'src/utils/random_access_stream.dart';
 export 'src/extractor/pdf_attachment_extractor.dart';
+export 'src/extractor/pdf_image_extractor.dart';

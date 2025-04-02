@@ -16,16 +16,16 @@ void main() {
       expect(firstAttachment.fileName, isNotNull);
       expect(firstAttachment.bytes, isNotEmpty);
 
-      expect(firstAttachment.fileName, equals('(invoice.xml)'));
+      expect(firstAttachment.fileName, equals('invoice.xml'));
     });
 
-    test('Returns empty list when no attachments found', () async {
-      // Load a PDF that does NOT have embedded files
-      final pdfBytes = await File('test/resources/pdf/641701496.pdf').readAsBytes();
-      final attachments = await PDFAttachmentExtractor().extractEmbeddedFilesFromPDF(pdfBytes);
-
-      // Expect no extracted files
-      expect(attachments, isEmpty);
+    test('PDF Würth Example', () async {
+      final file = File('test/resources/pdf/641701496.pdf');
+      final stream = ByteStream(file.readAsBytesSync());
+      final extracted = await PDFAttachmentExtractor().extractEmbeddedFilesFromPDFStream(stream);
+      expect(extracted, isNotNull);
+      expect(extracted.first.description, isNotNull);
+      expect(extracted.first.fileName, isNotNull);
     });
 
     test('Extracts embedded files from zugferd-example', () async {
@@ -34,6 +34,21 @@ void main() {
       final attachments = await PDFAttachmentExtractor().extractEmbeddedFilesFromPDF(pdfBytes);
       final firstAttachment = attachments.first;
       expect(firstAttachment.bytes, isNotEmpty);
+    });
+
+    test('Extracts json file embedded files from PDF', () async {
+      // Load a test PDF that contains json embedded files
+      final pdfBytes = await File('test/resources/pdf/sample_pdf_with_json_attachments.pdf').readAsBytes();
+      final attachments = await PDFAttachmentExtractor().extractEmbeddedFilesFromPDF(pdfBytes);
+
+      expect(attachments, isNotEmpty);
+
+      const expectedFileNames = 'config.json';
+      final firstAttachment = attachments.first;
+      expect(firstAttachment.fileName, isNotNull);
+      expect(firstAttachment.bytes, isNotEmpty);
+
+      expect(firstAttachment.fileName, expectedFileNames);
     });
   });
 }

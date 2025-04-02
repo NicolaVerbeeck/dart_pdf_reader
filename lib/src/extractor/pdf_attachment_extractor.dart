@@ -44,12 +44,21 @@ class PDFAttachmentExtractor {
     final attachments = <ExtractedPDFAttachment>[];
     for (var ref in afResolved.whereType<PDFObjectReference>()) {
       final dictUnderAF = await doc.resolve(ref);
+
       if (dictUnderAF is PDFDictionary) {
         final ef = dictUnderAF.entries[PDFNames.ef];
         if (ef is PDFDictionary) {
           final attachment = await extractFilesFromEF(ef, doc, catalog, dictUnderAF);
           if (attachment != null) {
             attachments.add(attachment);
+          }
+        } else if (ef is PDFObjectReference) {
+          final efResolved = await doc.resolve(ef);
+          if (efResolved is PDFDictionary) {
+            final attachment = await extractFilesFromEF(efResolved, doc, catalog, dictUnderAF);
+            if (attachment != null) {
+              attachments.add(attachment);
+            }
           }
         }
       }
@@ -69,7 +78,7 @@ class PDFAttachmentExtractor {
         if (ef is PDFDictionary) {
           final attachment = await extractFilesFromEF(ef, doc, catalog, fileSpec);
           if (attachment != null) {
-            attachment.fileName = fileNameObj.toString();
+            attachment.fileName ??= fileNameObj.toString();
             attachments.add(attachment);
           }
         }
@@ -99,7 +108,6 @@ class PDFAttachmentExtractor {
         if (dictUnderAF.entries[PDFNames.desc] case final PDFLiteralString descLiteral) {
           description = descLiteral.asString();
         }
-
         return ExtractedPDFAttachment(
           decodedContent: attachmentData,
           bytes: resolverRead,

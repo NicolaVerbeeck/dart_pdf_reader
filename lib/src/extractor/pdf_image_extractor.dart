@@ -3,7 +3,7 @@ import 'dart:typed_data';
 import '../../dart_pdf_reader.dart';
 
 /// Extracts image  from a PDF.
-class PDFAImageExtractor {
+class PDFImageExtractor {
   Future<List<ExtractedPDFImage>> extractImagesFromPDF(Uint8List bytes) async {
     return await extractImagesFromPDFStream(ByteStream(bytes));
   }
@@ -15,6 +15,7 @@ class PDFAImageExtractor {
       final catalog = await doc.catalog;
 
       final pagesRef = catalog.dictionary.entries[PDFNames.pages];
+
       if (pagesRef is PDFObjectReference) {
         final pagesResolved = await doc.resolve(pagesRef);
         if (pagesResolved is PDFDictionary) {
@@ -23,7 +24,6 @@ class PDFAImageExtractor {
       }
       return [];
     } catch (e) {
-      // print('Error extracting images from PDF: $e');
       return [];
     }
   }
