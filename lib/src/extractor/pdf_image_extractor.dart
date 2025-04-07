@@ -140,8 +140,6 @@ class PDFImageExtractor {
               return await _extractImageAsBase64(resolverRead, 'png', width, height, sMaskProperties, colorSpace, bitsPerComponent, filterValue, length, key);
             case 'DCTDecode':
               return await _extractImageAsBase64(resolverRead, 'jpg', width, height, sMaskProperties, colorSpace, bitsPerComponent, filterValue, length, key);
-            case 'JPXDecode':
-              return await _extractImageAsBase64(resolverRead, 'jp2', width, height, sMaskProperties, colorSpace, bitsPerComponent, filterValue, length, key);
             default:
             // print('Unsupported filter: ${filter.value}');
           }
