@@ -73,7 +73,7 @@ jobs:
           token: ${{ secrets.CODECOV_TOKEN }}
       - name: Test Report
         if: always()
-        uses: dorny/test-reporter@890a17cecf52a379fc869ab770a71657660be727 # v1
+        uses: dorny/test-reporter@dc3a92680fcc15842eef52e8c4606ea7ce6bd3f3 # v1
         with:
           name: Unit Tests
           path: unit.test.json
