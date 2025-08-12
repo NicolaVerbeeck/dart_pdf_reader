@@ -33,7 +33,7 @@ jobs:
           disable-sudo: true
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - uses: dart-lang/setup-dart@fedb1266e91cf51be2fdb382869461a434b920a3 # v1.6.2
         with:
           sdk: stable
@@ -53,7 +53,7 @@ jobs:
           disable-sudo: true
           egress-policy: audit
 
-      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - uses: actions/checkout@08c6903cd8c0fde910a37f88322edcfb5dd907a8 # v5.0.0
       - uses: dart-lang/setup-dart@fedb1266e91cf51be2fdb382869461a434b920a3 # v1.6.2
         with:
           sdk: stable
