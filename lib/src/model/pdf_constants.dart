@@ -109,4 +109,10 @@ final class PDFNames {
   static const xObject = PDFName('XObject');
   static const xRef = PDFName('XRef');
   static const xml = PDFName('XML');
+  static const embeddedFiles = PDFName('EmbeddedFiles');
+  static const names = PDFName('Names');
+  static const af = PDFName('AF');
+  static const f = PDFName('F');
+  static const ef = PDFName('EF');
+  static const desc = PDFName('Desc');
 }
