@@ -2,8 +2,10 @@
 
 ## Features
 
-'Simple' PDF reader package. Does not do a lot of interpretation of the data
-that is being read, but it does provide a way to read the data from a PDF file
+'Simple' PDF reader package. 
+* Handles and retrieves various attached files, including XML, JSON, and text files.
+* Extracts embedded images from PDFs.
+* Provide structured output with extracted file names and content.
 
 ## Getting started
 
@@ -20,4 +22,25 @@ final catalog = await doc.catalog;
 final pages = await catalog.getPages();
 final outlines = await catalog.getOutlines();
 final firstPage = pages.getPageAtIndex(0);
+```
+
+## Example to retrive attached files from PDF
+```dart
+   final pdfBytes = await File('test/resources/pdf/sample_with_attachment.pdf').readAsBytes();
+   final attachments = await PDFAttachmentExtractor().extractEmbeddedFilesFromPDF(pdfBytes);
+
+  for (var attachment in attachments) {
+    print('Extracted: ${attachment.fileName}, Size: ${attachment.bytes.length} bytes');
+  }
+```
+
+## Example to retrive images from PDF
+```dart
+   final file = File('test/resources/pdf/testingbarcode.pdf').readAsBytes;
+   final pdfBytes = ByteStream(file.readAsBytesSync());
+   final images = await PDFImageExtractor().extractEmbeddedFilesFromPDF(pdfBytes);
+
+   for (var image in images) {
+     print(image.b64image);
+    }
 ```
