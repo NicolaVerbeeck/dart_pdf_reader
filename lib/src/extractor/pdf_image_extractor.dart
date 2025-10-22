@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'dart:typed_data';
+import 'package:image/image.dart' as img;
 import '../../dart_pdf_reader.dart';
 
 /// Extracts image  from a PDF.
@@ -101,6 +102,9 @@ class PDFImageExtractor {
     return images;
   }
 
+  /// Extracts an image from a PDF XObject stream and returns it as PNG or JPEG bytes.
+  /// Handles FlateDecode (DeviceGray 1/8bits per pixel and DeviceRGB 8bits per pixel) and DCTDecode (JPEG).
+  /// Automatically unpacks 1bits per pixel grayscale images/masks. Resolves references as needed.
   Future<ExtractedPDFImage?> _extractImageDataFromXObject(
     PDFDocument doc,
     PDFDocumentCatalog catalog,
@@ -110,50 +114,69 @@ class PDFImageExtractor {
     try {
       final subtype = xObjectResolved.dictionary.entries[PDFNames.subtype];
       if (subtype is PDFName && subtype.value == 'Image') {
-        final resolverRead = await xObjectResolved.read(catalog.resolver);
         final filter = xObjectResolved.dictionary.entries[PDFNames.filter];
-        final width = xObjectResolved.dictionary.entries[PDFNames.width].toString();
-        final height = xObjectResolved.dictionary.entries[PDFNames.height].toString();
-        Map<String, dynamic>? sMaskProperties;
-        final length = xObjectResolved.dictionary.entries[PDFNames.length].toString();
+        final w = await getIntFromPDFDict(doc, xObjectResolved.dictionary.entries[PDFNames.width]);
+        final h = await getIntFromPDFDict(doc, xObjectResolved.dictionary.entries[PDFNames.height]);
+        final bitsPerComponent = await getIntFromPDFDict(doc, xObjectResolved.dictionary.entries[PDFNames.bitsPerComponent]);
+        final length = await getIntFromPDFDict(doc, xObjectResolved.dictionary.entries[PDFNames.length]);
+        final colorSpace = xObjectResolved.dictionary.entries[PDFNames.colorSpace]?.toString();
 
-        // Check if 'SMask' exists and resolve it if necessary
-        final sMask = xObjectResolved.dictionary.entries[PDFNames.sMask];
-        if (sMask != null) {
-          final sMaskResolved = await doc.resolve(sMask);
-
-          if (sMaskResolved is PDFStreamObject) {
-            sMaskProperties = {
-              'width': sMaskResolved.dictionary.entries[PDFNames.width]?.toString(),
-              'height': sMaskResolved.dictionary.entries[PDFNames.height]?.toString(),
-              'byte': await sMaskResolved.read(catalog.resolver)
-            };
-          }
-        }
-        final colorSpace = xObjectResolved.dictionary.entries[PDFNames.colorSpace].toString();
-        final bitsPerComponent = xObjectResolved.dictionary.entries[PDFNames.bitsPerComponent].toString();
         if (filter is PDFName) {
           final filterValue = filter.value.toString();
+          var resolverRead = await xObjectResolved.read(catalog.resolver);
 
           switch (filter.value) {
             case 'FlateDecode':
-              return await _extractImageAsBase64(resolverRead, 'png', width, height, sMaskProperties, colorSpace, bitsPerComponent, filterValue, length, key);
+              if (bitsPerComponent == 1 && colorSpace == '/DeviceGray') {
+                resolverRead = _convertBitsToBytes(resolverRead, w, h);
+              }
+
+              Map<String, dynamic>? sMaskProperties;
+              final sMask = xObjectResolved.dictionary.entries[PDFNames.sMask];
+              if (sMask != null) {
+                final sMaskResolved = await doc.resolve(sMask);
+                if (sMaskResolved is PDFStreamObject) {
+                  final sMaskWidth = await getIntFromPDFDict(doc, sMaskResolved.dictionary.entries[PDFNames.width]);
+                  final sMaskHeight = await getIntFromPDFDict(doc, sMaskResolved.dictionary.entries[PDFNames.height]);
+                  final sMaskBitsPerComponent = await getIntFromPDFDict(doc, sMaskResolved.dictionary.entries[PDFNames.bitsPerComponent]);
+
+                  var sMaskBytes = await sMaskResolved.read(catalog.resolver);
+
+                  if (sMaskBitsPerComponent == 1) {
+                    sMaskBytes = _convertBitsToBytes(sMaskBytes, sMaskWidth, sMaskHeight);
+                  }
+
+                  final sMaskPng = convertRawToPng(sMaskBytes, sMaskWidth, sMaskHeight, isGray: true);
+
+                  sMaskProperties = {
+                    'width': sMaskWidth,
+                    'height': sMaskHeight,
+                    'bytes': sMaskPng != null ? base64Encode(sMaskPng) : null,
+                  };
+                }
+              }
+
+              final pngBytes = convertRawToPng(resolverRead, w, h, isGray: (colorSpace == '/DeviceGray'));
+              if (pngBytes != null) {
+                return await _extractImageAsBase64(pngBytes, 'png', w, h, sMaskProperties, colorSpace, bitsPerComponent, filterValue, length, key);
+              }
+              return null;
+
             case 'DCTDecode':
-              return await _extractImageAsBase64(resolverRead, 'jpg', width, height, sMaskProperties, colorSpace, bitsPerComponent, filterValue, length, key);
+              return await _extractImageAsBase64(resolverRead, 'jpg', w, h, null, colorSpace, bitsPerComponent, filterValue, length, key);
             default:
-            // print('Unsupported filter: ${filter.value}');
+              return null;
           }
         }
       }
     } catch (e) {
-      // print('Error extracting image data from XObject: $e');
+      throw Exception('Error extracting image data from XObject: $e');
     }
     return null;
   }
 
-  Future<ExtractedPDFImage?> _extractImageAsBase64(Uint8List resolverRead, String format, String? width, String? height, Map<String, dynamic>? sMask, String? colorSpace, String? bitsPerComponent,
-      String? filter, String? length, String key) async {
-    // Read the stream data from the XObject and convert it to a base64 string.
+  Future<ExtractedPDFImage?> _extractImageAsBase64(
+      Uint8List resolverRead, String format, int? width, int? height, Map<String, dynamic>? sMask, String? colorSpace, int? bitsPerComponent, String? filter, int? length, String key) async {
     final filename = '$key.$format';
 
     return ExtractedPDFImage(
@@ -167,5 +190,76 @@ class PDFImageExtractor {
         bitsPerComponent: bitsPerComponent,
         filter: filter,
         length: length);
+  }
+
+  /// Converts raw bytes (8-bit, uint8) to PNG bytes.
+  /// You must provide [width] and [height].
+  Uint8List? convertRawToPng(Uint8List? rawBytes, int width, int height, {bool isGray = false}) {
+    if (rawBytes == null) return null;
+    if (isGray) {
+      final expectedLength = width * height;
+      if (rawBytes.length != expectedLength) {
+        return null;
+      }
+      final rgbBytes = Uint8List(expectedLength * 3);
+      for (var i = 0; i < expectedLength; i++) {
+        final v = rawBytes[i];
+        rgbBytes[i * 3] = v;
+        rgbBytes[i * 3 + 1] = v;
+        rgbBytes[i * 3 + 2] = v;
+      }
+      final dartImage = img.Image.fromBytes(
+        width: width,
+        height: height,
+        bytes: rgbBytes.buffer,
+        numChannels: 3,
+        order: img.ChannelOrder.rgb,
+      );
+      return Uint8List.fromList(img.PngEncoder().encode(dartImage));
+    } else {
+      final expectedLength = width * height * 3;
+      if (rawBytes.length != expectedLength) {
+        return null;
+      }
+      final dartImage = img.Image.fromBytes(
+        width: width,
+        height: height,
+        bytes: rawBytes.buffer,
+        numChannels: 3,
+        order: img.ChannelOrder.rgb,
+      );
+      return Uint8List.fromList(img.PngEncoder().encode(dartImage));
+    }
+  }
+
+  // --- Helper: Unpack 1bpp into 8bpp grayscale ---
+  Uint8List _convertBitsToBytes(Uint8List input, int width, int height) {
+    final output = Uint8List(width * height);
+    var byteIndex = 0, bitIndex = 7;
+    for (var i = 0; i < output.length; i++) {
+      if (bitIndex < 0) {
+        bitIndex = 7;
+        byteIndex++;
+      }
+      if (byteIndex >= input.length) break;
+      output[i] = ((input[byteIndex] >> bitIndex--) & 1) == 1 ? 255 : 0;
+    }
+    return output;
+  }
+
+  // Use this for width, height, bitsPerComponent, etc.
+  Future<int> getIntFromPDFDict(
+    PDFDocument doc,
+    dynamic value,
+  ) async {
+    // If it's a reference, resolve it recursively
+    while (value is PDFObjectReference) {
+      value = await doc.resolve(value);
+    }
+    if (value == null) return 0;
+    // If it's a number type
+    if (value is PDFNumber) return value.toInt();
+    // Try parsing from string (covers int and numeric strings)
+    return int.tryParse(value.toString()) ?? 0;
   }
 }

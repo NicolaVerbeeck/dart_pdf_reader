@@ -36,7 +36,10 @@ class PDFAttachmentExtractor {
       }
     }
 
-    return attachments;
+    //return attachments;
+
+    /// Returns a list of attachments with duplicate actual content (decoded from bytes) removed.
+    return {for (var att in attachments) utf8.decode(att.bytes): att}.values.toList();
   }
 
   /// Extracts files from the `/AF` array.

@@ -12,6 +12,7 @@ dependencies:
   archive: ">=3.4.9 <5.0.0"
   charset: ^2.0.1
   collection: '>=1.17.0 < 2.0.0'
+  image: ^4.5.4
   meta: '>=1.9.1 < 2.0.0'
 
 
