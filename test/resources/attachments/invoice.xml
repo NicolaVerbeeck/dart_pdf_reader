@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Invoice>
+    <Seller>Example Company</Seller>
+    <Buyer>Sample Customer</Buyer>
+    <Total>100.00</Total>
+</Invoice>
